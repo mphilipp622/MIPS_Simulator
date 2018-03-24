@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MIPS Simulator", "MIPS Simulator\MIPS Simulator.csproj", "{41E315DB-FEB0-451E-809B-6700F82199DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41E315DB-FEB0-451E-809B-6700F82199DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41E315DB-FEB0-451E-809B-6700F82199DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41E315DB-FEB0-451E-809B-6700F82199DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41E315DB-FEB0-451E-809B-6700F82199DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AFC17C0E-1A54-4286-A3DF-29DC6C507F8A}
+	EndGlobalSection
+EndGlobal
