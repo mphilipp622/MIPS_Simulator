@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MIPS_Simulator
 {
-    class Register
+    public class Register
     {
 
 		private string _name, _alias; // name will follow Rx format and alias will follow MIPS format (t0, s0, etc)
@@ -33,7 +33,7 @@ namespace MIPS_Simulator
 		{
 			_name = newName;
 			_alias = newAlias;
-			_value = 0;
+			_value = newValue;
 			_isUnsigned = false;
 		}
 

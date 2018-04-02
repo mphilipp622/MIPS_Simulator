@@ -1,152 +1,301 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MIPS_Simulator
 {
-    class OperationManager
+	class OperationManager
     {
-		//private Dictionary<Tuple<byte, byte>, >
+		private RegisterManager registers; // stores registers into hash tables. Called on to access registers
+
+		// Delegate definitions. Necessary for creating a hashtable of functions
+		delegate void rFunc(byte rs, byte rt, byte rd, byte shamt);
+		delegate void iFunc(byte rs, byte rt, short immediate);
+		delegate void iFuncU(byte rs, byte rt, ushort immediate);
+		delegate void jFunc(uint address);
+
+		// Hashtable definitions
+		private Dictionary<Tuple<byte, byte>, rFunc> rFormatOps;
+		private Dictionary<byte, iFunc> iFormatOps;
+		private Dictionary<byte, iFuncU> iFormatOpsU;
+		private Dictionary<byte, jFunc> jFormatOps;
+
+		// Default Constructor
+		public OperationManager()
+		{
+			registers = new RegisterManager();
+
+			// initialize hash tables for functions
+			InitRFormat();
+			InitIFormat();
+			InitJFormat();
+		}
+
+		// Executes an operation based on 6-bit opcode and 5-bit funct code.
+		public void ExecuteRFormatOp(byte opCode, byte funct, byte rs, byte rt, byte rd, byte shamt)
+		{
+			Tuple<byte, byte> newOp = new Tuple<byte, byte>(opCode, funct);
+
+			rFormatOps[newOp](rs, rt, rd, shamt);
+		}
+
+		// Executes an operation based on 6-bit opcode
+		public void ExecuteIFormatOp(byte opCode, byte rs, byte rt, dynamic immediate)
+		{
+			// figure out if immediate parameter is signed or unsigned.
+
+			if (immediate <= int.MaxValue)
+				iFormatOps[opCode](rs, rt, (short)immediate);
+			else if (immediate > int.MaxValue)
+				iFormatOpsU[opCode](rs, rt, (ushort)immediate);
+		}
+
+		public void ExecuteJFormatOp(byte opCode, uint newAddress)
+		{
+			jFormatOps[opCode](newAddress);
+		}
+
+		// Initializes and populates R-Format Dictionary
+		private void InitRFormat()
+		{
+			rFormatOps = new Dictionary<Tuple<byte, byte>, rFunc>();
+
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x20), Add);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x21), AddU);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x24), And);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x1A), Div);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x1B), DivU);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x08), JR);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x10), MfHi);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x12), MfLo);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x18), Mult);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x19), Multu);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x27), Nor);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x26), Xor);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x25), Or);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x2A), Slt);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x2B), SltU);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x00), SLL);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x02), SRL);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x03), SRA);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x22), Sub);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x23), SubU);
+		}
+
+		// Initializes and populates I-Format Dictionary
+		private void InitIFormat()
+		{
+			iFormatOps = new Dictionary<byte, iFunc>();
+			iFormatOpsU = new Dictionary<byte, iFuncU>();
+
+			// populate signed function hashtable
+			iFormatOps.Add(0x08, AddI);
+			iFormatOps.Add(0x0C, AndI);
+			iFormatOps.Add(0x04, Beq);
+			iFormatOps.Add(0x05, Bne);
+			iFormatOps.Add(0x0D, OrI);
+			iFormatOps.Add(0x0A, SltI);
+			//iFormatOps.Add(0x2B, Sw);
+			//iFormatOps.Add(0x28, Sb);
+			//iFormatOps.Add(0x29, Sh);
+			//iFormatOps.Add(0x0F, LuI);
+			//iFormatOps.Add(0x23, Lw);
+
+			iFormatOpsU.Add(0x09, AddIU);
+			iFormatOpsU.Add(0x0B, SltIU);
+			//iFormatOpsU.Add(0x24, lbu);
+			//iFormatOpsU.Add(0x25, Lhu);
+		}
+
+		// Initializes and Populates J-Format Dictionary
+		private void InitJFormat()
+		{
+			jFormatOps = new Dictionary<byte, jFunc>();
+
+			jFormatOps.Add(0x02, J);
+			jFormatOps.Add(0x03, Jal);
+		}
 
 		///////////////////////////////////
 		/////// R-Format Operations ///////
 		///////////////////////////////////
 
+		// All functions have the same parameter lists. This is required so the delegate can be used to call functions
+		// from a hashtable. Can't find out a way to allow a dynamic parameter list. This works though.
+
 		// signed Add
-		public void Add(Register rs, Register rt, ref Register rd)
+		public void Add(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = (int) rs.value + (int) rt.value;
+			registers.registerTable[rd].value = (int) registers.registerTable[rs].value + (int) registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// unsigned add
-		public void AddU(Register rs, Register rt, ref Register rd)
+		public void AddU(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = (uint) rs.value + (uint) rt.value;
+			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value + (uint) registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// bitwise and
-		void And(Register rs, Register rt, ref Register rd)
+		void And(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = rs.value & rt.value;
+			registers.registerTable[rd].value = registers.registerTable[rs].value & registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// signed division
-		void Div(Register rs, Register rt, ref Register hi, ref Register lo)
+		void Div(byte rs, byte rt, byte rd, byte shamt)
 		{
-			hi.value = (int) rs.value % (int) rt.value;
-			lo.value = (int) rs.value / (int) rt.value;
+			Globals.hi.value = (int)registers.registerTable[rs].value % (int) registers.registerTable[rt].value;
+			Globals.lo.value = (int)registers.registerTable[rs].value / (int) registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// unsigned division
-		void DivU(Register rs, Register rt, ref Register hi, ref Register lo)
+		void DivU(byte rs, byte rt, byte rd, byte shamt)
 		{
-			hi.value = (uint) rs.value % (uint) rt.value;
-			lo.value = (uint) rs.value / (uint) rt.value;
+			Globals.hi.value = (uint)registers.registerTable[rs].value % (uint) registers.registerTable[rt].value;
+			Globals.lo.value = (uint)registers.registerTable[rs].value / (uint) registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Jump register. Stores rs value into program counter
-		void JR(Register rs)
+		void JR(byte rs, byte rt, byte rd, byte shamt)
 		{
-			Globals.PC = rs.value;
+			Globals.PC = Globals.nPC;
+			Globals.nPC = registers.registerTable[rs].value;
 		}
 
 		// Move From Hi register into rd
-		void MfHi(ref Register rd, Register hi)
+		void MfHi(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = hi.value;
+			registers.registerTable[rd].value = Globals.hi.value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Move from Lo Register into rd
-		void MfLo(ref Register rd, Register lo)
+		void MfLo(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = lo.value;
+			registers.registerTable[rd].value = Globals.lo.value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// signed multiplication. Stores significant 32-bits into Hi and lower 32-bits into Lo
-		void Mult(Register rs, Register rt, ref Register hi, ref Register lo)
+		void Mult(byte rs, byte rt, byte rd, byte shamt)
 		{
-			long product = (int) rs.value * (int) rt.value;
+			long product = (int)registers.registerTable[rs].value * (int) registers.registerTable[rt].value;
 			var newHi = (int) (product >> 32); // shift top 32 to lowest 32.
 			var newLo = (int) (product << 32); // kill leading 32 bits
 			newLo = (int)(product >> 32); // shift back to lower 32-bits.
 
-			hi.value = newHi;
-			lo.value = newLo;
+			Globals.hi.value = newHi;
+			Globals.lo.value = newLo;
+
+			Globals.AdvancePC(4);
 		}
 
 		// unsigned multiplication. Stores sig 32-bits into Hi and low 32-bits into Lo
-		void Multu(Register rs, Register rt, ref Register hi, ref Register lo)
+		void Multu(byte rs, byte rt, byte rd, byte shamt)
 		{
-			ulong product = (uint)rs.value * (uint)rt.value;
+			ulong product = (uint)registers.registerTable[rs].value * (uint)registers.registerTable[rt].value;
 			var newHi = (uint) (product >> 32);
 			var newLo = (uint)(product << 32); // kill leading 0's
 			newLo = (uint)(product >> 32);
 
-			hi.value = newHi;
-			lo.value = newLo;
+			Globals.hi.value = newHi;
+			Globals.lo.value = newLo;
+
+			Globals.AdvancePC(4);
 		}
 
 		// bitwise nor. rd = not(rs | rt)
-		void Nor(Register rs, Register rt, ref Register rd)
+		void Nor(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = ~(rs.value | rt.value);
+			registers.registerTable[rd].value = ~(registers.registerTable[rs].value | registers.registerTable[rt].value);
+
+			Globals.AdvancePC(4);
 		}
 
 		// bitwise xor. rd = rs ^ rt
-		void Xor(Register rs, Register rt, ref Register rd)
+		void Xor(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = rs.value ^ rt.value;
+			registers.registerTable[rd].value = registers.registerTable[rs].value ^ registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// bitwise or. rd = rs | rt
-		void Or(Register rs, Register rt, ref Register rd)
+		void Or(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = rs.value | rt.value;
+			registers.registerTable[rd].value = registers.registerTable[rs].value | registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Set register if less than (signed)
-		void Slt(Register rs, Register rt, ref Register rd)
+		void Slt(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = (int) rs.value < (int) rt.value;
+			registers.registerTable[rd].value = (int)registers.registerTable[rs].value < (int) registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Set register if less than (unsigned)
-		void SltU(Register rs, Register rt, ref Register rd)
+		void SltU(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = (uint)rs.value < (uint)rt.value;
+			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value < (uint)registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Shift Left Logical
-		void SLL(Register rt, ref Register rd, byte shamt)
+		void SLL(byte rs, byte rt, byte rd, byte shamt)
 		{
 			// C# uses unsigned numbers for logical shifting
-			rd.value =  ((uint) rt.value) << shamt;
+			registers.registerTable[rd].value =  ((uint) registers.registerTable[rt].value) << shamt;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Shift Right Logical
-		void SRL(Register rt, ref Register rd, byte shamt)
+		void SRL(byte rs, byte rt, byte rd, byte shamt)
 		{
 			// C# uses unsigned numbers for logical shifting
-			rd.value = ((uint) rt.value) >> shamt;
+			registers.registerTable[rd].value = ((uint) registers.registerTable[rt].value) >> shamt;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Arithmetic Shift Right. Sign Extended.
-		void SRA(Register rt, ref Register rd, byte shamt)
+		void SRA(byte rs, byte rt, byte rd, byte shamt)
 		{
 			// C# uses signed numbers for arithmetic shifting.
-			rd.value = ((int)rt.value) >> shamt;
+			registers.registerTable[rd].value = ((int)registers.registerTable[rt].value) >> shamt;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Signed Subtraction. rd = rs - rt
-		void Sub(Register rs, Register rt, ref Register rd)
+		void Sub(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = (int) rs.value - (int) rt.value;
+			registers.registerTable[rd].value = (int)registers.registerTable[rs].value - (int) registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Unsigned Subtraction. rd = rs - rt
-		void SubU(Register rs, Register rt, ref Register rd)
+		void SubU(byte rs, byte rt, byte rd, byte shamt)
 		{
-			rd.value = (uint)rs.value - (uint)rt.value;
+			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value - (uint)registers.registerTable[rt].value;
+
+			Globals.AdvancePC(4);
 		}
 
 		///////////////////////////////////
@@ -154,94 +303,127 @@ namespace MIPS_Simulator
 		///////////////////////////////////
 
 		// signed immediate addition
-		void AddI(Register rs, ref Register rt, short immediate)
+		void AddI(byte rs, byte rt, short immediate)
 		{
-			rt.value = (int) (rs.value + immediate);
+			registers.registerTable[rt].value = (int) (registers.registerTable[rs].value + immediate);
+
+			Globals.AdvancePC(4);
 		}
 
 		// unsigned immediate addition
-		void AddIU(Register rs, ref Register rt, ushort immediate)
+		void AddIU(byte rs, byte rt, ushort immediate)
 		{
-			rt.value = (uint)(rs.value + immediate);
+			registers.registerTable[rt].value = (uint)(registers.registerTable[rs].value + immediate);
+
+			Globals.AdvancePC(4);
 		}
 
 		// Bitwise and immediate. 
-		void AndI(Register rs, ref Register rt, short immediate)
+		void AndI(byte rs, byte rt, short immediate)
 		{
-			rt.value = rs.value & immediate;
+			registers.registerTable[rt].value = registers.registerTable[rs].value & immediate;
+
+			Globals.AdvancePC(4);
 		}
 
 		// Branch if Equal. 
-		void Beq(Register rs, Register rt, short immediate)
+		void Beq(byte rs, byte rt, short immediate)
 		{
-			if (rs.value == rt.value)
-				Globals.PC = Globals.PC + (uint) (immediate << 2);
+			if (registers.registerTable[rs].value == registers.registerTable[rt].value)
+				Globals.AdvancePC((uint) (immediate << 2));
 			else
-				Globals.PC = Globals.PC + 4;
+				Globals.AdvancePC(4);
 		}
 
 		// Branch if Not Equal.
-		void Bne(Register rs, Register rt, short immediate)
+		void Bne(byte rs, byte rt, short immediate)
 		{
-			if (rs.value != rt.value)
-				Globals.PC = Globals.PC + (uint)(immediate << 2);
+			if (registers.registerTable[rs].value != registers.registerTable[rt].value)
+				Globals.AdvancePC((uint)(immediate << 2));
 			else
-				Globals.PC = Globals.PC + 4;
+				Globals.AdvancePC(4);
 		}
 
 		// load byte immediate
-		void Lbu(Register rs, ref Register rd, short immediate)
+		void Lbu(byte rs, byte rt, short immediate)
 		{
-
+			Globals.AdvancePC(4);
 		}
 
 		// Load Halfword Unsigned
 		void Lhu()
 		{
-
+			Globals.AdvancePC(4);
 		}
 
 		// Load Upper Immediate
 		void LuI()
 		{
-
+			Globals.AdvancePC(4);
 		}
 
 		// Load Word
 		void Lw()
 		{
-
+			Globals.AdvancePC(4);
 		}
 
 		// Bitwise Or Immediate
-		void OrI()
+		void OrI(byte rs, byte rt, short immediate)
 		{
+			registers.registerTable[rt].value = registers.registerTable[rs].value | immediate;
 
+			Globals.AdvancePC(4);
 		}
 
 		void Sb()
 		{
-
+			Globals.AdvancePC(4);
 		}
 
 		void Sh()
 		{
-
+			Globals.AdvancePC(4);
 		}
 
-		void SltI()
+		// Set on less than immediate (signed)
+		void SltI(byte rs, byte rt, short immediate)
 		{
+			registers.registerTable[rt].value = ((int)registers.registerTable[rs].value) < immediate;
 
+			Globals.AdvancePC(4);
 		}
-		
-		void SltIU()
-		{
 
+		// Set on less than immediate (unsigned)
+		void SltIU(byte rs, byte rt, ushort immediate)
+		{
+			registers.registerTable[rt].value = ((uint)registers.registerTable[rs].value) < immediate;
+
+			Globals.AdvancePC(4);
 		}
 
 		void Sw()
 		{
+			Globals.AdvancePC(4);
+		}
 
+		///////////////////////////////////
+		/////// I-Format Operations ///////
+		///////////////////////////////////
+
+		// Jump command.
+		void J(uint address)
+		{
+			Globals.PC = Globals.nPC;
+			Globals.nPC = (Globals.PC & 0xF0000000) | (address << 2);
+		}
+
+		// Jump and Link
+		void Jal(uint address)
+		{
+			registers.registerTable[31].value = Globals.PC + 8; // r31 is $ra.
+			Globals.PC = Globals.nPC;
+			Globals.nPC = (Globals.PC & 0xf0000000) | (address << 2);
 		}
 	}
 }

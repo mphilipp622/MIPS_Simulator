@@ -8,17 +8,21 @@ namespace MIPS_Simulator
     class RegisterManager
 	{
 		// Hash table for all the registers. Key takes a byte value because rs, rt, and rd will only ever take 5 bits
-		private Dictionary<byte, Register> registers;
+		private Dictionary<byte, Register> _registers;
 
-		private Register hi, lo;
+		// public accessor for the hashtable.
+		public Dictionary<byte, Register> registerTable
+		{
+			get
+			{
+				return _registers;
+			}
+		}
 
 		// default constructor will initialize a hash table of all 32 registers with appropriate names and aliases.
 		public RegisterManager()
 		{
-			registers = new Dictionary<byte, Register>();
-
-			hi = new Register("hi", "$hi", 0);
-			lo = new Register("lo", "$lo", 0);
+			_registers = new Dictionary<byte, Register>();
 
 			for (byte i = 0; i < 32; i++)
 			{
@@ -50,32 +54,8 @@ namespace MIPS_Simulator
 				else if (i == 31)
 					newRegister = new Register("R31", "$ra", 0);
 
-				registers.Add(i, newRegister); 
+				_registers.Add(i, newRegister); 
 			}
-		}
-
-		// returns Register by registerNumber parameter. E.G: GetRegister(3) will return R3.
-		public Register GetRegister(byte registerNumber)
-		{
-			if(registerNumber > 31)
-			{
-				Console.WriteLine("Register number must be between 0 and 31.");
-				return null;
-			}
-
-			return registers[registerNumber];
-		}
-
-		// Returns hi register
-		public Register GetHi()
-		{
-			return hi;
-		}
-
-		// returns lo register
-		public Register GetLo()
-		{
-			return lo;
 		}
 	}
 }

@@ -7,7 +7,11 @@ namespace MIPS_Simulator
         static void Main(string[] args)
         {
 			Globals.PC = 0;
+			InstructionReader test = new InstructionReader();
+			uint val = 0b1011_0111_0110_1001_1010_0101_1010_1000;
 
+			Console.WriteLine(test.GetAddress(val));
+			//Register temp = test.GetRS(val);
 			//Register temp = new Register("R0", "blah", 0);
 			//temp.value = int.MaxValue;
 			//OperationManager man = new OperationManager();
