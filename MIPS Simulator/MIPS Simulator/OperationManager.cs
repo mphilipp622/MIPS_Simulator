@@ -127,7 +127,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (int) registers.registerTable[rs].value + (int) registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// unsigned add
@@ -135,7 +135,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value + (uint) registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// bitwise and
@@ -143,7 +143,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = registers.registerTable[rs].value & registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// signed division
@@ -152,7 +152,7 @@ namespace MIPS_Simulator
 			Globals.hi.value = (int)registers.registerTable[rs].value % (int) registers.registerTable[rt].value;
 			Globals.lo.value = (int)registers.registerTable[rs].value / (int) registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// unsigned division
@@ -161,7 +161,7 @@ namespace MIPS_Simulator
 			Globals.hi.value = (uint)registers.registerTable[rs].value % (uint) registers.registerTable[rt].value;
 			Globals.lo.value = (uint)registers.registerTable[rs].value / (uint) registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Jump register. Stores rs value into program counter
@@ -176,7 +176,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = Globals.hi.value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Move from Lo Register into rd
@@ -184,7 +184,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = Globals.lo.value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// signed multiplication. Stores significant 32-bits into Hi and lower 32-bits into Lo
@@ -198,7 +198,7 @@ namespace MIPS_Simulator
 			Globals.hi.value = newHi;
 			Globals.lo.value = newLo;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// unsigned multiplication. Stores sig 32-bits into Hi and low 32-bits into Lo
@@ -212,7 +212,7 @@ namespace MIPS_Simulator
 			Globals.hi.value = newHi;
 			Globals.lo.value = newLo;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// bitwise nor. rd = not(rs | rt)
@@ -220,7 +220,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = ~(registers.registerTable[rs].value | registers.registerTable[rt].value);
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// bitwise xor. rd = rs ^ rt
@@ -228,7 +228,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = registers.registerTable[rs].value ^ registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// bitwise or. rd = rs | rt
@@ -236,7 +236,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = registers.registerTable[rs].value | registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Set register if less than (signed)
@@ -244,7 +244,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (int)registers.registerTable[rs].value < (int) registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Set register if less than (unsigned)
@@ -252,7 +252,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value < (uint)registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Shift Left Logical
@@ -261,7 +261,7 @@ namespace MIPS_Simulator
 			// C# uses unsigned numbers for logical shifting
 			registers.registerTable[rd].value =  ((uint) registers.registerTable[rt].value) << shamt;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Shift Right Logical
@@ -270,7 +270,7 @@ namespace MIPS_Simulator
 			// C# uses unsigned numbers for logical shifting
 			registers.registerTable[rd].value = ((uint) registers.registerTable[rt].value) >> shamt;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Arithmetic Shift Right. Sign Extended.
@@ -279,7 +279,7 @@ namespace MIPS_Simulator
 			// C# uses signed numbers for arithmetic shifting.
 			registers.registerTable[rd].value = ((int)registers.registerTable[rt].value) >> shamt;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Signed Subtraction. rd = rs - rt
@@ -287,7 +287,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (int)registers.registerTable[rs].value - (int) registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Unsigned Subtraction. rd = rs - rt
@@ -295,7 +295,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value - (uint)registers.registerTable[rt].value;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		///////////////////////////////////
@@ -307,7 +307,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = (int) (registers.registerTable[rs].value + immediate);
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// unsigned immediate addition
@@ -315,7 +315,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = (uint)(registers.registerTable[rs].value + immediate);
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Bitwise and immediate. 
@@ -323,7 +323,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = registers.registerTable[rs].value & immediate;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Branch if Equal. 
@@ -331,8 +331,6 @@ namespace MIPS_Simulator
 		{
 			if (registers.registerTable[rs].value == registers.registerTable[rt].value)
 				Globals.AdvancePC((uint) (immediate << 2));
-			else
-				Globals.AdvancePC(4);
 		}
 
 		// Branch if Not Equal.
@@ -340,32 +338,30 @@ namespace MIPS_Simulator
 		{
 			if (registers.registerTable[rs].value != registers.registerTable[rt].value)
 				Globals.AdvancePC((uint)(immediate << 2));
-			else
-				Globals.AdvancePC(4);
 		}
 
 		// load byte immediate
 		void Lbu(byte rs, byte rt, short immediate)
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Load Halfword Unsigned
 		void Lhu()
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Load Upper Immediate
 		void LuI()
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Load Word
 		void Lw()
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Bitwise Or Immediate
@@ -373,17 +369,17 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = registers.registerTable[rs].value | immediate;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		void Sb()
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		void Sh()
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Set on less than immediate (signed)
@@ -391,7 +387,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = ((int)registers.registerTable[rs].value) < immediate;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		// Set on less than immediate (unsigned)
@@ -399,12 +395,12 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = ((uint)registers.registerTable[rs].value) < immediate;
 
-			Globals.AdvancePC(4);
+			
 		}
 
 		void Sw()
 		{
-			Globals.AdvancePC(4);
+			
 		}
 
 		///////////////////////////////////

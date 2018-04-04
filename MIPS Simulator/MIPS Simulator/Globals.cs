@@ -12,6 +12,8 @@ namespace MIPS_Simulator
 		// next program counter
 		public static uint nPC;
 
+		// Global accessors to registers. Mostly used by UI
+		//public static RegisterManager RM = new RegisterManager();
 		public static Register hi = new Register("hi", "$hi", 0);
 		public static Register lo = new Register("lo", "$lo", 0);
 

@@ -16,6 +16,8 @@ namespace MIPS_Simulator
 
 		public void ParseInstruction(uint instruction)
 		{
+			Globals.AdvancePC(4); // advance program counter as soon as we fetch an instruction
+
 			if (GetOpCode(instruction) == 0x00)
 				RFormat(instruction); // r format op codes always start with 0
 		}
@@ -100,7 +102,7 @@ namespace MIPS_Simulator
 			return (short)instruction;
 		}
 
-		public uint GetAddress(uint instruction)
+		private uint GetAddress(uint instruction)
 		{
 			instruction = instruction << 6; // remove opCode
 			instruction = instruction >> 6;  // shift to right to get 26 bits

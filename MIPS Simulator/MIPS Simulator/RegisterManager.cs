@@ -5,7 +5,7 @@ using System.Text;
 namespace MIPS_Simulator
 {
 	// Keeps hash tables for different registers and defines getters for those hash tables.
-    class RegisterManager
+    public class RegisterManager
 	{
 		// Hash table for all the registers. Key takes a byte value because rs, rt, and rd will only ever take 5 bits
 		private Dictionary<byte, Register> _registers;
