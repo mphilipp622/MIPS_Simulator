@@ -65,59 +65,5 @@ namespace MIPS_Simulator
 		{
 			return lines;
 		}
-
-		// Returns the op code of the current line. 6-bits
-		public int GetOpCode()
-		{
-			return 0;
-		}
-
-		// Returns the RS code of the current line. 5-bits
-		public int GetRS()
-		{
-			return 0;
-		}
-
-		// Returns the RT code of the current line. 5-bits
-		public int GetRT()
-		{
-			return 0;
-		}
-
-		// Returns the RD code of the current line. 5-bits
-		public int GetRD()
-		{
-			return 0;
-		}
-
-		// Returns shift amount code of the current line. 5-bits
-		public int GetShift()
-		{
-			return 0;
-		}
-
-		// Returns the op function code of current line. 6-bits
-		public int GetFunct()
-		{
-			return 0;
-		}
-
-		// returns constant function of current line. I-Format. 16-bits
-		public int GetConstant()
-		{
-			return 0;
-		}
-
-		// returns address function of current line. I-Format. 16-bits
-		public int GetAddress16Bit()
-		{
-			return 0;
-		}
-
-		// returns address function of current line. J-Format. 26-bits
-		public int GetAddress26Bit()
-		{
-			return 0;
-		}
     }
 }

@@ -70,7 +70,9 @@ namespace MIPS_Simulator
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x08), JR);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x09), JALR);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x10), MfHi);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x11), MtHi);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x12), MfLo);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x13), MtLo);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x18), Mult);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x19), Multu);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x27), Nor);
@@ -98,22 +100,27 @@ namespace MIPS_Simulator
 			iFormatOpsU = new Dictionary<byte, iFuncU>();
 
 			// populate signed function hashtable
+			iFormatOpsU.Add(0x04, Beq);
+			iFormatOpsU.Add(0x05, Bne);
+			iFormatOpsU.Add(0x06, Blez);
+			iFormatOpsU.Add(0x07, Bgtz);
 			iFormatOps.Add(0x08, AddI);
 			iFormatOps.Add(0x0C, AndI);
-			iFormatOps.Add(0x04, Beq);
-			iFormatOps.Add(0x05, Bne);
 			iFormatOps.Add(0x0D, OrI);
+			iFormatOps.Add(0x0F, XorI);
 			iFormatOps.Add(0x0A, SltI);
-			//iFormatOps.Add(0x2B, Sw);
-			//iFormatOps.Add(0x28, Sb);
-			//iFormatOps.Add(0x29, Sh);
-			//iFormatOps.Add(0x0F, LuI);
-			//iFormatOps.Add(0x23, Lw);
+			iFormatOps.Add(0x20, Lb);
+			iFormatOps.Add(0x21, Lh);
+			iFormatOps.Add(0x23, Lw);
+			iFormatOps.Add(0x2B, Sw);
+			iFormatOps.Add(0x28, Sb);
+			iFormatOps.Add(0x29, Sh);
+			iFormatOps.Add(0x0F, LuI);
 
 			iFormatOpsU.Add(0x09, AddIU);
 			iFormatOpsU.Add(0x0B, SltIU);
-			//iFormatOpsU.Add(0x24, lbu);
-			//iFormatOpsU.Add(0x25, Lhu);
+			iFormatOps.Add(0x24, Lbu);
+			iFormatOps.Add(0x25, Lhu);
 		}
 
 		// Initializes and Populates J-Format Dictionary
@@ -210,6 +217,16 @@ namespace MIPS_Simulator
 			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
 
 			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
+		}
+
+		void MtHi(byte rs, byte rt, byte rd, byte shamt)
+		{
+			Globals.hi.value = registers.registerTable[rs].value;
+		}
+
+		void MtLo(byte rs, byte rt, byte rd, byte shamt)
+		{
+			Globals.lo.value = registers.registerTable[rs].value;
 		}
 
 		// Move from Lo Register into rd
@@ -428,17 +445,44 @@ namespace MIPS_Simulator
 		}
 
 		// Branch if Equal. 
-		void Beq(byte rs, byte rt, short immediate)
+		void Beq(byte rs, byte rt, ushort immediate)
 		{
 			if (registers.registerTable[rs].value == registers.registerTable[rt].value)
 				Globals.AdvancePC((uint) (immediate << 2));
 		}
 
 		// Branch if Not Equal.
-		void Bne(byte rs, byte rt, short immediate)
+		void Bne(byte rs, byte rt, ushort immediate)
 		{
 			if (registers.registerTable[rs].value != registers.registerTable[rt].value)
 				Globals.AdvancePC((uint)(immediate << 2));
+		}
+
+		void Blez(byte rs, byte rt, ushort immediate)
+		{
+			if (registers.registerTable[rs].value <= 0)
+				Globals.PC = (uint)immediate;
+		}
+
+		void Bgtz(byte rs, byte rt, ushort immediate)
+		{
+			if (registers.registerTable[rs].value > 0)
+				Globals.PC = (uint)immediate;
+		}
+
+		void XorI(byte rs, byte rt, short immediate)
+		{
+			registers.registerTable[rt].value = registers.registerTable[rs].value ^ immediate;
+		}
+
+		void Lb(byte rs, byte rt, short immediate)
+		{
+			registers.registerTable[rt].value = Globals.staticData[registers.registerTable[rs].value + immediate];
+		}
+
+		void Lh(byte rs, byte rt, short immediate)
+		{
+
 		}
 
 		// load byte immediate
@@ -449,21 +493,21 @@ namespace MIPS_Simulator
 		}
 
 		// Load Halfword Unsigned
-		void Lhu()
+		void Lhu(byte rs, byte rt, short immediate)
 		{
 
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Load Upper Immediate
-		void LuI()
+		void LuI(byte rs, byte rt, short immediate)
 		{
 
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Load Word
-		void Lw()
+		void Lw(byte rs, byte rt, short immediate)
 		{
 
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
@@ -477,13 +521,13 @@ namespace MIPS_Simulator
 			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
-		void Sb()
+		void Sb(byte rs, byte rt, short immediate)
 		{
 
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
-		void Sh()
+		void Sh(byte rs, byte rt, short immediate)
 		{
 
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
@@ -505,7 +549,7 @@ namespace MIPS_Simulator
 			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
-		void Sw()
+		void Sw(byte rs, byte rt, short immediate)
 		{
 
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);

@@ -29,5 +29,10 @@ namespace MIPS_Simulator
 			PC = nPC;
 			nPC += offset;
 		}
+
+		// Memory Allocation Dictionaries. Memory address will be used for key, instruction for value
+		public static Dictionary<uint, uint> textData;
+		public static Dictionary<uint, uint> staticData;
+		public static Dictionary<uint, uint> stackData;
 	}
 }
