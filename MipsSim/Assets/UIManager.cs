@@ -43,10 +43,9 @@ public class UIManager : MonoBehaviour {
             _path += p + "\n";
         }
 
-		Globals.filePath = _path;
 		Globals.parser = new Parser(_path);
 
-		Debug.Log(Globals.parser.GetLine());
+		//Debug.Log(Globals.parser.GetLine());
 	}
 
     void WriteResult(string path) {

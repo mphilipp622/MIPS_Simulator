@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.IO;
 
 namespace MIPS_Simulator
 {
@@ -21,11 +22,12 @@ namespace MIPS_Simulator
 		// Constructor will read in the filepath and store the text in the file to a list.
 		public Parser(string filepath)
 		{
-			Regex pattern = new Regex("[/]");
-			pattern.Replace(filepath, @"\");
-			Debug.Log(filepath);
+			filepath = filepath.Replace("\n", ""); // get rid of illegal character from file path
+
 			var temp = System.IO.File.ReadAllLines(filepath);
 			lines = new List<string>(temp);
+
+			PrintToUI();
 		}
 
 		// Get the next line in the text file
@@ -41,6 +43,14 @@ namespace MIPS_Simulator
 			}
 
 			return null;
+		}
+
+		void PrintToUI()
+		{
+			ScaleText scaler = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
+
+			foreach (var line in lines)
+				scaler.SetText(line);
 		}
 
 		// Get every line of the text file
