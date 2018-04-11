@@ -33,7 +33,8 @@ public class UIManager : MonoBehaviour {
 		WriteResult(StandaloneFileBrowser.OpenFilePanel("Open File", "", "s", false));
 	}
 	
-	void WriteResult(string[] paths) {
+	void WriteResult(string[] paths)
+	{
         if (paths.Length == 0) {
             return;
         }
@@ -44,11 +45,11 @@ public class UIManager : MonoBehaviour {
         }
 
 		Globals.parser = new Parser(_path);
-
 		//Debug.Log(Globals.parser.GetLine());
 	}
 
-    void WriteResult(string path) {
+    void WriteResult(string path)
+	{
         _path = path;
 
 		Globals.filePath = _path;

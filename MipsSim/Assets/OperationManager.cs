@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace MIPS_Simulator
 {
+	// Basically decodes all the operations
 	class OperationManager
     {
 		private RegisterManager registers; // stores registers into hash tables. Called on to access registers
+		private RegisterTextManager textMan;
 
 		// Delegate definitions. Necessary for creating a hashtable of functions
 		delegate void rFunc(byte rs, byte rt, byte rd, byte shamt);
@@ -23,6 +25,7 @@ namespace MIPS_Simulator
 		public OperationManager()
 		{
 			registers = new RegisterManager();
+			textMan = new RegisterTextManager();
 
 			// initialize hash tables for functions
 			InitRFormat();
@@ -65,6 +68,7 @@ namespace MIPS_Simulator
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x1A), Div);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x1B), DivU);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x08), JR);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x09), JALR);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x10), MfHi);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x12), MfLo);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x18), Mult);
@@ -75,10 +79,16 @@ namespace MIPS_Simulator
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x2A), Slt);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x2B), SltU);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x00), SLL);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x04), SLLV);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x02), SRL);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x06), SRLV);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x03), SRA);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x07), SRAV);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x22), Sub);
 			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0x23), SubU);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0xA), MovZ);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0xB), MovN);
+			rFormatOps.Add(new Tuple<byte, byte>(0x00, 0xC), SysCall);
 		}
 
 		// Initializes and populates I-Format Dictionary
@@ -127,7 +137,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (int) registers.registerTable[rs].value + (int) registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// unsigned add
@@ -135,7 +147,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value + (uint) registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// bitwise and
@@ -143,7 +157,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = registers.registerTable[rs].value & registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// signed division
@@ -152,7 +168,9 @@ namespace MIPS_Simulator
 			Globals.hi.value = (int)registers.registerTable[rs].value % (int) registers.registerTable[rt].value;
 			Globals.lo.value = (int)registers.registerTable[rs].value / (int) registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// unsigned division
@@ -161,14 +179,27 @@ namespace MIPS_Simulator
 			Globals.hi.value = (uint)registers.registerTable[rs].value % (uint) registers.registerTable[rt].value;
 			Globals.lo.value = (uint)registers.registerTable[rs].value / (uint) registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// Jump register. Stores rs value into program counter
 		void JR(byte rs, byte rt, byte rd, byte shamt)
 		{
-			Globals.PC = Globals.nPC;
-			Globals.nPC = registers.registerTable[rs].value;
+			Globals.PC = registers.registerTable[rs].value;
+			//Globals.nPC = registers.registerTable[rs].value;
+
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
+		}
+
+		// jump and link register
+		void JALR(byte rs, byte rt, byte rd, byte shamt)
+		{
+			registers.registerTable[31].value = Globals.PC + 4;
+			Globals.PC = registers.registerTable[rs].value;
 		}
 
 		// Move From Hi register into rd
@@ -176,7 +207,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = Globals.hi.value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// Move from Lo Register into rd
@@ -184,7 +217,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = Globals.lo.value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// signed multiplication. Stores significant 32-bits into Hi and lower 32-bits into Lo
@@ -198,7 +233,9 @@ namespace MIPS_Simulator
 			Globals.hi.value = newHi;
 			Globals.lo.value = newLo;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// unsigned multiplication. Stores sig 32-bits into Hi and low 32-bits into Lo
@@ -212,7 +249,9 @@ namespace MIPS_Simulator
 			Globals.hi.value = newHi;
 			Globals.lo.value = newLo;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// bitwise nor. rd = not(rs | rt)
@@ -220,7 +259,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = ~(registers.registerTable[rs].value | registers.registerTable[rt].value);
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// bitwise xor. rd = rs ^ rt
@@ -228,7 +269,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = registers.registerTable[rs].value ^ registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// bitwise or. rd = rs | rt
@@ -236,7 +279,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = registers.registerTable[rs].value | registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// Set register if less than (signed)
@@ -244,7 +289,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (int)registers.registerTable[rs].value < (int) registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// Set register if less than (unsigned)
@@ -252,7 +299,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value < (uint)registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// Shift Left Logical
@@ -261,7 +310,15 @@ namespace MIPS_Simulator
 			// C# uses unsigned numbers for logical shifting
 			registers.registerTable[rd].value =  ((uint) registers.registerTable[rt].value) << shamt;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
+		}
+
+		// shift left logical value
+		void SLLV(byte rs, byte rt, byte rd, byte shamt)
+		{
+			registers.registerTable[rd].value = ((uint)registers.registerTable[rt].value) << (registers.registerTable[rs].value);
 		}
 
 		// Shift Right Logical
@@ -270,7 +327,15 @@ namespace MIPS_Simulator
 			// C# uses unsigned numbers for logical shifting
 			registers.registerTable[rd].value = ((uint) registers.registerTable[rt].value) >> shamt;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
+		}
+
+		// shift right logical value
+		void SRLV(byte rs, byte rt, byte rd, byte shamt)
+		{
+			registers.registerTable[rd].value = ((uint)registers.registerTable[rt].value) >> (registers.registerTable[rs].value);
 		}
 
 		// Arithmetic Shift Right. Sign Extended.
@@ -279,15 +344,24 @@ namespace MIPS_Simulator
 			// C# uses signed numbers for arithmetic shifting.
 			registers.registerTable[rd].value = ((int)registers.registerTable[rt].value) >> shamt;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
+		void SRAV(byte rs, byte rt, byte rd, byte shamt)
+		{
+			registers.registerTable[rd].value = ((int)registers.registerTable[rt].value) >> registers.registerTable[rs].value;
+		}
+		
 		// Signed Subtraction. rd = rs - rt
 		void Sub(byte rs, byte rt, byte rd, byte shamt)
 		{
 			registers.registerTable[rd].value = (int)registers.registerTable[rs].value - (int) registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
 		}
 
 		// Unsigned Subtraction. rd = rs - rt
@@ -295,7 +369,32 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rd].value = (uint)registers.registerTable[rs].value - (uint)registers.registerTable[rt].value;
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rd, registers.registerTable[rd].name, registers.registerTable[rd].value);
+		}
+
+		void MovZ(byte rs, byte rt, byte rd, byte shamt)
+		{
+			if (registers.registerTable[rt].value == 0)
+				registers.registerTable[rd].value = registers.registerTable[rs].value;
+		}
+
+		void MovN(byte rs, byte rt, byte rd, byte shamt)
+		{
+			if (registers.registerTable[rt].value != 0)
+				registers.registerTable[rd].value = registers.registerTable[rs].value;
+		}
+
+		void SysCall(byte rs, byte rt, byte rd, byte shamt)
+		{
+			var code = registers.registerTable[2].value; // get $v0 value
+
+			/*
+			 if(code == 1)
+			 print_int
+			 else if etc.
+			 */
 		}
 
 		///////////////////////////////////
@@ -307,7 +406,9 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = (int) (registers.registerTable[rs].value + immediate);
 
-			
+			//Globals.parser.PrintToUI("Add " + registers.registerTable[rd].name + ", " + registers.registerTable[rs] + ", " + registers.registerTable[rt]);
+
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// unsigned immediate addition
@@ -315,7 +416,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = (uint)(registers.registerTable[rs].value + immediate);
 
-			
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Bitwise and immediate. 
@@ -323,7 +424,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = registers.registerTable[rs].value & immediate;
 
-			
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Branch if Equal. 
@@ -343,25 +444,29 @@ namespace MIPS_Simulator
 		// load byte immediate
 		void Lbu(byte rs, byte rt, short immediate)
 		{
-			
+
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Load Halfword Unsigned
 		void Lhu()
 		{
-			
+
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Load Upper Immediate
 		void LuI()
 		{
-			
+
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Load Word
 		void Lw()
 		{
-			
+
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Bitwise Or Immediate
@@ -369,17 +474,19 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = registers.registerTable[rs].value | immediate;
 
-			
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		void Sb()
 		{
-			
+
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		void Sh()
 		{
-			
+
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Set on less than immediate (signed)
@@ -387,7 +494,7 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = ((int)registers.registerTable[rs].value) < immediate;
 
-			
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Set on less than immediate (unsigned)
@@ -395,12 +502,13 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[rt].value = ((uint)registers.registerTable[rs].value) < immediate;
 
-			
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		void Sw()
 		{
-			
+
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		///////////////////////////////////
@@ -410,16 +518,18 @@ namespace MIPS_Simulator
 		// Jump command.
 		void J(uint address)
 		{
-			Globals.PC = Globals.nPC;
-			Globals.nPC = (Globals.PC & 0xF0000000) | (address << 2);
+			Globals.PC = address;
+			//Globals.PC = Globals.nPC;
+			//Globals.nPC = (Globals.PC & 0xF0000000) | (address << 2);
 		}
 
 		// Jump and Link
 		void Jal(uint address)
 		{
 			registers.registerTable[31].value = Globals.PC + 8; // r31 is $ra.
-			Globals.PC = Globals.nPC;
-			Globals.nPC = (Globals.PC & 0xf0000000) | (address << 2);
+			Globals.PC = address;
+			//Globals.PC = Globals.nPC;
+			//Globals.nPC = (Globals.PC & 0xf0000000) | (address << 2);
 		}
 	}
 }
