@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace MIPS_Simulator
 {
@@ -12,11 +13,13 @@ namespace MIPS_Simulator
 		public InstructionReader()
 		{
 			opManager = new OperationManager();
+			
 		}
 
 		public void ParseAndPrintInstruction(string instruction)
 		{
-			uint newInst = Convert.ToUInt32(instruction);
+			
+			uint newInst = Convert.ToUInt32(instruction, 16);
 
 			if (GetOpCode(newInst) == 0)
 				UIManager.instance.WriteDecodedRFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetRS(newInst), GetShamt(newInst), GetFunct(newInst));

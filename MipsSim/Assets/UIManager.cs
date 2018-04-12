@@ -114,7 +114,7 @@ public class UIManager : MonoBehaviour {
 		programText = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
 		//Byte[] temp = BitConverter.GetBytes(0xFF001010);
 		////Array.Reverse(temp);
-
+		Debug.Log("UIManager Init");
 		//for (uint i = 0, j = 3; i < 4; i++)
 		//{
 		//	Globals.staticData.Add(0x10010000 + i, temp[j - i]);
@@ -151,15 +151,15 @@ public class UIManager : MonoBehaviour {
 		else if (funct >= 4 && funct <= 7) // Format op, rd, rt, rs
 			newLine = String.Format("{0}    {1}, {2}, {3}\n", rFormat[newOp], registers[rd].alias, registers[rt].alias, registers[rs].alias);
 		else if (funct == 8 || funct == 9) // JR and JALR
-			newLine = String.Format("{0}    {1}", rFormat[newOp], registers[rs].alias);
+			newLine = String.Format("{0}    {1}\n", rFormat[newOp], registers[rs].alias);
 		else if (funct == 12)
-			newLine = "SYSCALL";
+			newLine = "SYSCALL\n";
 		else if (funct == 16 || funct == 18) //MFHI, MFLO
-			newLine = String.Format("{0}    {1}", rFormat[newOp], registers[rd].alias);
+			newLine = String.Format("{0}    {1}\n", rFormat[newOp], registers[rd].alias);
 		else if (funct == 17 || funct == 19) // MTHI, MTLO
-			newLine = String.Format("{0}    {1}", rFormat[newOp], registers[rs].alias);
+			newLine = String.Format("{0}    {1}\n", rFormat[newOp], registers[rs].alias);
 		else if (funct >= 24 && funct <= 27) // MULT, DIV, etc.
-			newLine = String.Format("{0}    {1}, {2}", rFormat[newOp], registers[rs].alias, registers[rt].alias);
+			newLine = String.Format("{0}    {1}, {2}\n", rFormat[newOp], registers[rs].alias, registers[rt].alias);
 
 		programText.SetText(newLine);
 	}
@@ -169,22 +169,22 @@ public class UIManager : MonoBehaviour {
 		string newLine = null;
 
 		if (op == 4 || op == 5) // BEQ, BNE
-			newLine = String.Format("{0}    {1}, {2}, {3}", iFormat[op], registers[rs].alias, registers[rt].alias, Convert.ToString(immediate));
+			newLine = String.Format("{0}    {1}, {2}, {3}\n", iFormat[op], registers[rs].alias, registers[rt].alias, Convert.ToString(immediate));
 		else if (op == 6 || op == 7) // BLEZ, bgtz
-			newLine = String.Format("{0}    {1}, {2}", iFormat[op], registers[rs].alias, Convert.ToString(immediate));
+			newLine = String.Format("{0}    {1}, {2}\n", iFormat[op], registers[rs].alias, Convert.ToString(immediate));
 		else if (op >= 8 && op <= 14) // addi, andi, etc
-			newLine = String.Format("{0}    {1}, {2}, {3}", iFormat[op], registers[rt].alias, registers[rs].alias, Convert.ToString(immediate));
+			newLine = String.Format("{0}    {1}, {2}, {3}\n", iFormat[op], registers[rt].alias, registers[rs].alias, Convert.ToString(immediate));
 		else if (op == 15) // lui
-			newLine = String.Format("{0}    {1}, {2}", iFormat[op], registers[rt].alias, Convert.ToString(immediate));
+			newLine = String.Format("{0}    {1}, {2}\n", iFormat[op], registers[rt].alias, Convert.ToString(immediate));
 		else if (op >= 32) // loads and stores
-			newLine = String.Format("{0}    {1}, {2}({3})", iFormat[op], registers[rt].alias, Convert.ToString(immediate), registers[rs].alias);
+			newLine = String.Format("{0}    {1}, {2}({3})\n", iFormat[op], registers[rt].alias, Convert.ToString(immediate), registers[rs].alias);
 
 		programText.SetText(newLine);
 	}
 
 	public void WriteDecodedJFormat(byte op, uint address)
 	{
-		string newLine = string.Format("{0}    {1}", jFormat[op], Convert.ToString(address));
+		string newLine = string.Format("{0}    {1}\n", jFormat[op], Convert.ToString(address));
 
 		programText.SetText(newLine);
 	}

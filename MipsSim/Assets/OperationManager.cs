@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace MIPS_Simulator
 {
@@ -31,6 +32,8 @@ namespace MIPS_Simulator
 			InitRFormat();
 			InitIFormat();
 			InitJFormat();
+
+			
 		}
 
 		// Executes an operation based on 6-bit opcode and 5-bit funct code.
@@ -100,27 +103,29 @@ namespace MIPS_Simulator
 			iFormatOpsU = new Dictionary<byte, iFuncU>();
 
 			// populate signed function hashtable
-			iFormatOpsU.Add(0x04, Beq);
-			iFormatOpsU.Add(0x05, Bne);
-			iFormatOpsU.Add(0x06, Blez);
-			iFormatOpsU.Add(0x07, Bgtz);
-			iFormatOps.Add(0x08, AddI);
-			iFormatOps.Add(0x0C, AndI);
-			iFormatOps.Add(0x0D, OrI);
-			iFormatOps.Add(0x0F, XorI);
-			iFormatOps.Add(0x0A, SltI);
-			iFormatOps.Add(0x20, Lb);
-			iFormatOps.Add(0x21, Lh);
-			iFormatOps.Add(0x23, Lw);
-			iFormatOps.Add(0x2B, Sw);
-			iFormatOps.Add(0x28, Sb);
-			iFormatOps.Add(0x29, Sh);
-			iFormatOps.Add(0x0F, LuI);
-
-			iFormatOpsU.Add(0x09, AddIU);
-			iFormatOpsU.Add(0x0B, SltIU);
-			iFormatOps.Add(0x24, Lbu);
-			iFormatOps.Add(0x25, Lhu);
+			
+			iFormatOps.Add(8, AddI);
+			iFormatOps.Add(10, SltI);
+			iFormatOps.Add(12, AndI);
+			iFormatOps.Add(13, OrI);
+			iFormatOps.Add(14, XorI);
+			iFormatOps.Add(15, LuI);
+			iFormatOps.Add(32, Lb);
+			iFormatOps.Add(33, Lh);
+			iFormatOps.Add(35, Lw);
+			iFormatOps.Add(36, Lbu);
+			iFormatOps.Add(37, Lhu);
+			iFormatOps.Add(40, Sb);
+			iFormatOps.Add(41, Sh);
+			iFormatOps.Add(43, Sw);
+			
+			iFormatOpsU.Add(4, Beq);
+			iFormatOpsU.Add(5, Bne);
+			iFormatOpsU.Add(6, Blez);
+			iFormatOpsU.Add(7, Bgtz);
+			iFormatOpsU.Add(9, AddIU);
+			iFormatOpsU.Add(11, SltIU);
+			
 		}
 
 		// Initializes and Populates J-Format Dictionary
@@ -128,8 +133,8 @@ namespace MIPS_Simulator
 		{
 			jFormatOps = new Dictionary<byte, jFunc>();
 
-			jFormatOps.Add(0x02, J);
-			jFormatOps.Add(0x03, Jal);
+			jFormatOps.Add(2, J);
+			jFormatOps.Add(3, Jal);
 		}
 
 		///////////////////////////////////
