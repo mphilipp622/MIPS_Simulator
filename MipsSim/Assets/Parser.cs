@@ -13,6 +13,7 @@ namespace MIPS_Simulator
 	/// </summary>
     public class Parser
     {
+		InstructionReader instRead;
 		// contains every line of the text file
 		private List<string> lines;
 
@@ -27,7 +28,10 @@ namespace MIPS_Simulator
 			var temp = System.IO.File.ReadAllLines(filepath);
 			lines = new List<string>(temp);
 
-			PrintToUI();
+			instRead = new InstructionReader();
+			foreach (string line in lines)
+				instRead.ParseAndPrintInstruction(line);
+			//PrintToUI();
 		}
 
 		// Get the next line in the text file

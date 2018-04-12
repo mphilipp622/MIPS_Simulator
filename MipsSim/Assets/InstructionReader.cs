@@ -14,6 +14,18 @@ namespace MIPS_Simulator
 			opManager = new OperationManager();
 		}
 
+		public void ParseAndPrintInstruction(string instruction)
+		{
+			uint newInst = Convert.ToUInt32(instruction);
+
+			if (GetOpCode(newInst) == 0)
+				UIManager.instance.WriteDecodedRFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetRS(newInst), GetShamt(newInst), GetFunct(newInst));
+			else if (GetOpCode(newInst) == 2 || GetOpCode(newInst) == 3)
+				UIManager.instance.WriteDecodedJFormat(GetOpCode(newInst), GetAddress(newInst));
+			else if (GetOpCode(newInst) > 3)
+				UIManager.instance.WriteDecodedIFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetImmediate(newInst));
+		}
+
 		public void ParseInstruction(uint instruction)
 		{
 			Globals.AdvancePC(4); // advance program counter as soon as we fetch an instruction
