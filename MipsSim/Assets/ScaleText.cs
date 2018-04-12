@@ -31,9 +31,18 @@ public class ScaleText : MonoBehaviour
 		textArea.sizeDelta = new Vector2(textArea.sizeDelta.x, textArea.sizeDelta.y + minHeight);
 	}
 
+	// Used for syscall Print_Int
+	public void SetText(int val)
+	{
+		text.text += val;
+	}
+
+	// Used for printing lines of data. Will generally be used on Program data window
 	public void SetText(string newLine)
 	{
-		text.text += newLine + "\n";
-		Scale();
+		text.text += newLine;
+
+		if(newLine.EndsWith("\n")) // if line ends, we need to scale text area downwards
+			Scale();
 	}
 }

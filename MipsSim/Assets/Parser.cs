@@ -27,7 +27,7 @@ namespace MIPS_Simulator
 			var temp = System.IO.File.ReadAllLines(filepath);
 			lines = new List<string>(temp);
 
-			//PrintToUI();
+			PrintToUI();
 		}
 
 		// Get the next line in the text file
@@ -45,19 +45,19 @@ namespace MIPS_Simulator
 			return null;
 		}
 
-		//void PrintToUI()
-		//{
-		//	ScaleText scaler = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
+		void PrintToUI()
+		{
+			ScaleText scaler = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
 
-		//	foreach (var line in lines)
-		//		scaler.SetText(line);
-		//}
+			foreach (var line in lines)
+				scaler.SetText(line);
+		}
 
 		public void PrintToUI(string newLine)
 		{
 			ScaleText scaler = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
 
-			scaler.SetText(newLine);
+			scaler.SetText(newLine + "\n");
 		}
 
 		// Get every line of the text file

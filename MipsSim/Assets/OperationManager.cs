@@ -6,7 +6,7 @@ namespace MIPS_Simulator
 	// Basically decodes all the operations
 	class OperationManager
     {
-		private RegisterManager registers; // stores registers into hash tables. Called on to access registers
+		public static RegisterManager registers; // stores registers into hash tables. Called on to access registers. Hate to make it static though.
 		private RegisterTextManager textMan;
 
 		// Delegate definitions. Necessary for creating a hashtable of functions
@@ -407,11 +407,16 @@ namespace MIPS_Simulator
 		{
 			var code = registers.registerTable[2].value; // get $v0 value
 
-			/*
-			 if(code == 1)
-			 print_int
-			 else if etc.
-			 */
+
+			if (code == 1)
+				UIManager.instance.PrintInt(registers.registerTable[4].value);
+			else if (code == 4)
+				UIManager.instance.PrintString(registers.registerTable[4].value);
+			else if (code == 5)
+				UIManager.instance.ReadInt(); // STILL NEED TO STORE  INT INTO V0
+			else if (code == 8)
+				UIManager.instance.ReadString();
+
 		}
 
 		///////////////////////////////////
@@ -477,39 +482,70 @@ namespace MIPS_Simulator
 
 		void Lb(byte rs, byte rt, short immediate)
 		{
-			registers.registerTable[rt].value = Globals.staticData[registers.registerTable[rs].value + immediate];
+			registers.registerTable[rt].value = (int) Globals.staticData[registers.registerTable[rs].value + immediate];
+		}
+
+		// load byte unsigned
+		void Lbu(byte rs, byte rt, short immediate)
+		{
+			registers.registerTable[rt].value = (uint) Globals.staticData[registers.registerTable[rs].value + immediate];
+
+			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		void Lh(byte rs, byte rt, short immediate)
 		{
+			if (immediate % 2 != 0)
+				return; // must be multiple of two
 
-		}
+			Byte[] tempBytes = new Byte[2];
+			for (int i = 0; i < 2; i++)
+				tempBytes[i] = Globals.staticData[registers.registerTable[rs].value + immediate + i];
 
-		// load byte immediate
-		void Lbu(byte rs, byte rt, short immediate)
-		{
+			Array.Reverse(tempBytes); // flip to big endian
+			short tempVal = BitConverter.ToInt16(tempBytes, 0);
 
-			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
+			registers.registerTable[rt].value = (int) tempVal;
 		}
 
 		// Load Halfword Unsigned
 		void Lhu(byte rs, byte rt, short immediate)
 		{
+			if (immediate % 2 != 0)
+				return; // must be multiple of two
 
-			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
-		}
+			Byte[] tempBytes = new Byte[2];
+			for (int i = 0; i < 2; i++)
+				tempBytes[i] = Globals.staticData[registers.registerTable[rs].value + immediate + i];
 
-		// Load Upper Immediate
-		void LuI(byte rs, byte rt, short immediate)
-		{
+			Array.Reverse(tempBytes); // flip to big endian
+			ushort tempVal = BitConverter.ToUInt16(tempBytes, 0);
 
+			registers.registerTable[rt].value = (uint) tempVal;
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		// Load Word
 		void Lw(byte rs, byte rt, short immediate)
 		{
+			if (immediate % 4 != 0)
+				return; // must be multiple of two
 
+			Byte[] tempBytes = new Byte[4];
+			for (int i = 0; i < 4; i++)
+				tempBytes[i] = Globals.staticData[registers.registerTable[rs].value + immediate + i];
+
+			Array.Reverse(tempBytes); // flip to big endian
+			int tempVal = BitConverter.ToInt32(tempBytes, 0);
+
+			registers.registerTable[rt].value = (int) tempVal;
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
+		}
+
+		// Load Upper Immediate
+		void LuI(byte rs, byte rt, short immediate)
+		{
+			registers.registerTable[rt].value = immediate << 16;
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
@@ -523,13 +559,36 @@ namespace MIPS_Simulator
 
 		void Sb(byte rs, byte rt, short immediate)
 		{
+			Byte[] tempBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
+			Array.Reverse(tempBytes); // switch to big endian
 
+			Globals.staticData[registers.registerTable[rs].value + immediate] = tempBytes[0];
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
 		void Sh(byte rs, byte rt, short immediate)
 		{
+			if (immediate % 2 != 0)
+				return;
 
+			Byte[] tempBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
+			Array.Reverse(tempBytes);
+
+			for(int i = 0; i < 2; i++)
+				Globals.staticData[registers.registerTable[rs].value + immediate + i] = tempBytes[i];
+			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
+		}
+
+		void Sw(byte rs, byte rt, short immediate)
+		{
+			if (immediate % 4 != 0)
+				return;
+
+			Byte[] tempBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
+			Array.Reverse(tempBytes);
+
+			for(int i = 0; i < 4; i++)
+				Globals.staticData[registers.registerTable[rs].value + immediate + i] = tempBytes[i];
 			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
@@ -549,11 +608,7 @@ namespace MIPS_Simulator
 			textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
 		}
 
-		void Sw(byte rs, byte rt, short immediate)
-		{
-
-			//textMan.SetRegisterText(rt, registers.registerTable[rt].name, registers.registerTable[rt].value);
-		}
+		
 
 		///////////////////////////////////
 		/////// I-Format Operations ///////
