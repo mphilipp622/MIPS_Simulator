@@ -57,72 +57,78 @@ namespace MIPS_Simulator
 		// parses the instruction and returns the opcode.
 		private byte GetOpCode(uint instruction)
 		{
+
 			return (byte)(instruction >> 26); // get 6 most significant bits for op code.
 		}
 
 		// parses the instruction and returns register rs byte value
 		private byte GetRS(uint instruction)
 		{
-			instruction = instruction << 6; // Remove opCode
-			instruction = instruction >> 27; // shift to the right to get 5 bits.
-			
-			return (byte)instruction;
+			instruction = (instruction & 0x03E00000) >> 21;
+			//instruction = instruction << 6; // Remove opCode
+			//instruction = instruction >> 27; // shift to the right to get 5 bits.
+
+			//return (byte)instruction;
+			return (byte)(instruction);
 		}
 
 		// parses the instruction and returns register rt byte value
 		private byte GetRT(uint instruction)
 		{
-			instruction = instruction << 11; // Remove opCode and rs
-			instruction = instruction >> 27; // shift to the right to get 5 bits.
-			
-			return (byte)instruction;
+			instruction = (instruction & 0x001F0000) >> 16;
+			//	instruction = instruction << 11; // Remove opCode and rs
+			//	instruction = instruction >> 27; // shift to the right to get 5 bits.
+
+			return (byte)(instruction);
 		}
 
 		// parses the instruction and returns register rd byte value
 		private byte GetRD(uint instruction)
 		{
-			instruction = instruction << 16; // Remove opCode, rs, and rt
-			instruction = instruction >> 27; // shift to the right to get 5 bits.
+			instruction = (instruction & 0x0000F800) >> 11;
+			//instruction = instruction << 16; // Remove opCode, rs, and rt
+			//instruction = instruction >> 27; // shift to the right to get 5 bits.
 
-			return (byte)instruction;
+			return (byte)(instruction & 0x0000F800);
 		}
 
 		// parses the instruction and returns Shamt
 		private byte GetShamt(uint instruction)
 		{
-			instruction = instruction << 21; // Remove opCode, rs, rt, and rd
-			instruction = instruction >> 27; // shift to the right to get 5 bits.
+			instruction = (instruction & 0x000007C0) >> 6;
+			//instruction = instruction << 21; // Remove opCode, rs, rt, and rd
+			//instruction = instruction >> 27; // shift to the right to get 5 bits.
 
-			return (byte)instruction;
+			return (byte)(instruction & 0x000007C0);
 		}
 
 		// parses the instruction and returns funct
 		private byte GetFunct(uint instruction)
 		{
-			instruction = instruction << 26; // Remove opCode, rs, rt, and rd
-			instruction = instruction >> 26; // shift to the right to get 5 bits.
+			//instruction = instruction << 26; // Remove opCode, rs, rt, and rd
+			//instruction = instruction >> 26; // shift to the right to get 5 bits.
 
-			return (byte) instruction;
+			return (byte)( instruction & 0x0000003F);
 		}
 
 		// parses the instruction and returns IMM
 		private dynamic GetImmediate(uint instruction)
 		{
-			instruction = instruction << 16; // Remove opCode, rs, and rt
-			instruction = instruction >> 16; // shift to the right to get 5 bits.
+			//instruction = instruction << 16; // Remove opCode, rs, and rt
+			//instruction = instruction >> 16; // shift to the right to get 5 bits.
 
-			if (instruction > short.MaxValue)
-				return (ushort)instruction;
+			//if (instruction > short.MaxValue)
+			//	return (ushort)instruction;
 
-			return (short)instruction;
+			return (short)(instruction & 0x0000FFFF);
 		}
 
 		private uint GetAddress(uint instruction)
 		{
-			instruction = instruction << 6; // remove opCode
-			instruction = instruction >> 6;  // shift to right to get 26 bits
+			//instruction = instruction << 6; // remove opCode
+			//instruction = instruction >> 6;  // shift to right to get 26 bits
 
-			return instruction;
+			return instruction & 0x03FFFFFF;
 		}
 	}
 }
