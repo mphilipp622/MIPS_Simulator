@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace MIPS_Simulator
 {
@@ -23,7 +24,7 @@ namespace MIPS_Simulator
 		public RegisterManager()
 		{
 			_registers = new Dictionary<byte, Register>();
-
+			
 			for (byte i = 0; i < 32; i++)
 			{
 				Register newRegister = null;
@@ -48,7 +49,7 @@ namespace MIPS_Simulator
 				else if (i == 28)
 					newRegister = new Register("R28", "$gp", 0);
 				else if (i == 29)
-					newRegister = new Register("R29", "$sp", 0);
+					newRegister = new Register("R29", "$sp", 0x7fffeffc);
 				else if (i == 30)
 					newRegister = new Register("R30", "$fp", 0);
 				else if (i == 31)

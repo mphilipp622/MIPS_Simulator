@@ -6,6 +6,7 @@ TagManager:
   tags:
   - TextContent
   - ConsoleContent
+  - RegisterTextManager
   layers:
   - Default
   - TransparentFX

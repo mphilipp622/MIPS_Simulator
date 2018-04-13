@@ -34,7 +34,7 @@ namespace MIPS_Simulator
 
 		// Memory Allocation Dictionaries. Memory address will be used for key, instruction for value
 		public static Dictionary<uint, uint> textData;
-		public static Dictionary<uint, byte> staticData = new Dictionary<uint, byte>(); // key will be base memory address. value will be a byte of the data
+		public static Dictionary<uint, int> staticData; // key will be base memory address. value will be a byte of the data
 														 /*
 														  * Byte[] temp = BitConverter.GetBytes(0xFF001010);
 															Array.Reverse(temp);

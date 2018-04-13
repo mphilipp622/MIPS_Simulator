@@ -46,6 +46,7 @@ public class UIManager : MonoBehaviour {
 
 	void Start ()
 	{
+
 		// OpCode Hash Tables that use strings. Will further be used in OperationManager and UIManager
 		rFormat = new Dictionary<Tuple<byte, byte>, string>()
 		{
@@ -114,7 +115,6 @@ public class UIManager : MonoBehaviour {
 		programText = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
 		//Byte[] temp = BitConverter.GetBytes(0xFF001010);
 		////Array.Reverse(temp);
-		Debug.Log("UIManager Init");
 		//for (uint i = 0, j = 3; i < 4; i++)
 		//{
 		//	Globals.staticData.Add(0x10010000 + i, temp[j - i]);
@@ -169,9 +169,9 @@ public class UIManager : MonoBehaviour {
 		string newLine = null;
 
 		if (op == 4 || op == 5) // BEQ, BNE
-			newLine = String.Format("{0}    {1}, {2}, {3}\n", iFormat[op], registers[rs].alias, registers[rt].alias, Convert.ToString(immediate));
+			newLine = String.Format("{0}    {1}, {2}, {3}\n", iFormat[op], registers[rs].alias, registers[rt].alias, Convert.ToString(immediate * 4));
 		else if (op == 6 || op == 7) // BLEZ, bgtz
-			newLine = String.Format("{0}    {1}, {2}\n", iFormat[op], registers[rs].alias, Convert.ToString(immediate));
+			newLine = String.Format("{0}    {1}, {2}\n", iFormat[op], registers[rs].alias, Convert.ToString(immediate * 4));
 		else if (op >= 8 && op <= 14) // addi, andi, etc
 			newLine = String.Format("{0}    {1}, {2}, {3}\n", iFormat[op], registers[rt].alias, registers[rs].alias, Convert.ToString(immediate));
 		else if (op == 15) // lui
@@ -260,5 +260,11 @@ public class UIManager : MonoBehaviour {
 	public void SetString()
 	{
 		
+	}
+
+	// Called on by NextLineButton in the scene
+	public void ReadNextLine()
+	{
+		Globals.parser.ExecuteLine();
 	}
 }

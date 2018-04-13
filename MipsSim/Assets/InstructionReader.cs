@@ -20,21 +20,32 @@ namespace MIPS_Simulator
 		{
 			
 			uint newInst = Convert.ToUInt32(instruction, 16);
+			//string hexValue = newInst.ToString("X");
+			//newInst = uint.Parse(hexValue, System.Globalization.NumberStyles.HexNumber);
 
 			if (GetOpCode(newInst) == 0)
-				UIManager.instance.WriteDecodedRFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetRS(newInst), GetShamt(newInst), GetFunct(newInst));
+			{
+				UIManager.instance.WriteDecodedRFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetRD(newInst), GetShamt(newInst), GetFunct(newInst));
+			}
 			else if (GetOpCode(newInst) == 2 || GetOpCode(newInst) == 3)
 				UIManager.instance.WriteDecodedJFormat(GetOpCode(newInst), GetAddress(newInst));
 			else if (GetOpCode(newInst) > 3)
 				UIManager.instance.WriteDecodedIFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetImmediate(newInst));
 		}
 
-		public void ParseInstruction(uint instruction)
+		public void ParseInstruction(string instruction)
 		{
+			uint newInst = Convert.ToUInt32(instruction, 16);
+			
 			Globals.AdvancePC(4); // advance program counter as soon as we fetch an instruction
 
-			if (GetOpCode(instruction) == 0x00)
-				RFormat(instruction); // r format op codes always start with 0
+			if (GetOpCode(newInst) == 0)
+				RFormat(newInst); // r format op codes always start with 0
+			else if (GetOpCode(newInst) == 2 || GetOpCode(newInst) == 3)
+				JFormat(newInst);
+			else if (GetOpCode(newInst) > 3)
+				IFormat(newInst);
+
 		}
 
 		// Parses Registers rs, rt, and rd. Also gets funct code and shamt. Will then call Operation Manager to execute op
@@ -86,10 +97,11 @@ namespace MIPS_Simulator
 		private byte GetRD(uint instruction)
 		{
 			instruction = (instruction & 0x0000F800) >> 11;
+			
 			//instruction = instruction << 16; // Remove opCode, rs, and rt
 			//instruction = instruction >> 27; // shift to the right to get 5 bits.
 
-			return (byte)(instruction & 0x0000F800);
+			return (byte) instruction;
 		}
 
 		// parses the instruction and returns Shamt
@@ -99,7 +111,7 @@ namespace MIPS_Simulator
 			//instruction = instruction << 21; // Remove opCode, rs, rt, and rd
 			//instruction = instruction >> 27; // shift to the right to get 5 bits.
 
-			return (byte)(instruction & 0x000007C0);
+			return (byte) instruction;
 		}
 
 		// parses the instruction and returns funct
