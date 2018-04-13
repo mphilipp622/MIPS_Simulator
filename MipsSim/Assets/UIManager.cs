@@ -22,7 +22,13 @@ public class UIManager : MonoBehaviour {
 	private ScaleText consoleText, programText;
 
 	[SerializeField]
-	GameObject inputPanelInt, inputPanelString;
+	GameObject inputPanel;
+
+	[SerializeField]
+	InputField inputField;
+
+	[SerializeField]
+	Text outputText;
 
 	// Alias for cleaner lookup of register hash table
 	private Dictionary<byte, Register> registers
@@ -45,8 +51,7 @@ public class UIManager : MonoBehaviour {
 	}
 
 	void Start ()
-	{
-
+	{		
 		// OpCode Hash Tables that use strings. Will further be used in OperationManager and UIManager
 		rFormat = new Dictionary<Tuple<byte, byte>, string>()
 		{
@@ -113,24 +118,6 @@ public class UIManager : MonoBehaviour {
 
 		consoleText = GameObject.FindGameObjectWithTag("ConsoleContent").GetComponent<ScaleText>();
 		programText = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
-		//Byte[] temp = BitConverter.GetBytes(0xFF001010);
-		////Array.Reverse(temp);
-		//for (uint i = 0, j = 3; i < 4; i++)
-		//{
-		//	Globals.staticData.Add(0x10010000 + i, temp[j - i]);
-		//	//Debug.Log(String.Format("{0:X}", Globals.staticData[0x10010000 + i]));
-		//}
-		//Byte[] tempBytes = new Byte[2];
-		//for (uint i = 0; i < 2; i++)
-		//	tempBytes[i] = Globals.staticData[0x10010000 + i];
-
-		//Array.Reverse(tempBytes);
-		//short tempVal = BitConverter.ToInt16(tempBytes, 0);
-		//Debug.Log(tempVal);
-		////Array.Reverse(temp);
-		////Array.Reverse(temp);
-		////short tempVal = BitConverter.ToInt16(temp, 2);
-		//Debug.Log(String.Format("{0:X}", tempVal));
 	}
 	
 	void Update ()
@@ -228,33 +215,67 @@ public class UIManager : MonoBehaviour {
 
 	public void PrintInt(dynamic val)
 	{
-		consoleText.SetText(val);
+		inputPanel.SetActive(true);
+		outputText.text = Convert.ToString(val);
+		consoleText.SetText(Convert.ToString(val));
 	}
 
-	public void PrintString(string newString)
+	public void PrintString(dynamic memoryAddress)
 	{
-		consoleText.SetText(newString);
+		uint offset = Convert.ToUInt32(memoryAddress);
+
+		string output = null;
+
+		// KEEP READING MEMORY UNTIL \0 IS READ. OR IF Convert.ToChar(hexValue) returns 0 then we know we're done with the string
+
+		char nextChar = ' ';
+
+		while (nextChar != 0)
+		{
+			// Keep reading memory until we find null termination or we hit a non-string data type.
+			Byte[] chars = BitConverter.GetBytes(Globals.staticData[offset]);
+			Array.Reverse(chars);
+
+			foreach (byte b in chars) // for every byte in the memory address we're looking for
+			{
+				nextChar = Convert.ToChar(b);
+				if (nextChar == 0)
+					break;
+
+				output += nextChar;
+			}
+
+			offset += 4;
+		}
+			
+		inputPanel.SetActive(true);
+		outputText.text = output;
+		consoleText.SetText(output);
+
+		//string output = BitConverter.ToChar(characters, 0);
+
+		//consoleText.SetText(newString);
 	}
 
 	public void ReadInt()
 	{
-		inputPanelInt.SetActive(true);
-		inputPanelInt.GetComponentInChildren<InputField>().contentType = InputField.ContentType.IntegerNumber;
-		inputPanelInt.GetComponentInChildren<InputField>().ActivateInputField();
+		inputPanel.SetActive(true);
+		inputField.contentType = InputField.ContentType.IntegerNumber;
+		inputField.ActivateInputField();
 		//return newVal;
 	}
 
 	public void SetInt()
 	{
-		OperationManager.registers.registerTable[2].value = Convert.ToInt32(inputPanelInt.GetComponentInChildren<InputField>().text);
+		OperationManager.registers.registerTable[2].value = Convert.ToInt32(inputPanel.GetComponentInChildren<InputField>().text);
 		//Globals.intToDisplay = Convert.ToInt32(inputPanel.GetComponentInChildren<InputField>().text);
 	}
 
 	public void ReadString()
 	{
-		inputPanelString.SetActive(true);
-		inputPanelString.GetComponentInChildren<InputField>().contentType = InputField.ContentType.Alphanumeric;
-		inputPanelString.GetComponentInChildren<InputField>().ActivateInputField();
+		inputPanel.SetActive(true);
+		inputField.contentType = InputField.ContentType.Alphanumeric;
+		inputField.ActivateInputField();
 	}
 
 	public void SetString()
@@ -266,5 +287,10 @@ public class UIManager : MonoBehaviour {
 	public void ReadNextLine()
 	{
 		Globals.parser.ExecuteLine();
+	}
+
+	public void CloseInputPanel()
+	{
+		inputPanel.SetActive(false);
 	}
 }

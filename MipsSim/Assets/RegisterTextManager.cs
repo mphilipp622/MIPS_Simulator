@@ -9,6 +9,19 @@ public class RegisterTextManager : MonoBehaviour
 {
 	Dictionary<int, Text> registerText;
 
+	public static RegisterTextManager instance = null;
+
+	void Awake()
+	{
+		//Check if instance already exists
+		if (instance == null)
+			instance = this;
+
+		//If instance already exists and it's not this:
+		else if (instance != this)
+			Destroy(gameObject);
+	}
+
 	void Start ()
 	{
 		registerText = new Dictionary<int, Text>();
@@ -24,6 +37,6 @@ public class RegisterTextManager : MonoBehaviour
 	public void SetRegisterText(byte reg, string regName, dynamic val)
 	{
 		//Debug.Log(reg + "    " + regName + "    " + val);
-		registerText[reg].text = regName+ " = " + val;
+		registerText[reg].text = regName + " = " + val.ToString("X");
 	}
 }

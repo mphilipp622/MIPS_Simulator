@@ -10,10 +10,24 @@ namespace MIPS_Simulator
 		public static string filePath;
 		
 		// program counter
-		public static uint PC;
+		private static int _PC;
+
+		public static int PC
+		{
+			get
+			{
+				return _PC;
+			}
+			set
+			{
+				_PC = value;
+
+				RegisterTextManager.instance.SetRegisterText(34, "$PC", _PC);
+			}
+		}
 
 		// next program counter
-		public static uint nPC;
+		public static int nPC;
 
 		public static dynamic intToDisplay;
 
@@ -26,7 +40,7 @@ namespace MIPS_Simulator
 		public static Register lo = new Register("lo", "$lo", 0);
 
 		// Function for incrementing PC and nPC
-		public static void AdvancePC(uint offset)
+		public static void AdvancePC(int offset)
 		{
 			PC = nPC;
 			nPC += offset;
@@ -44,6 +58,6 @@ namespace MIPS_Simulator
 														  * for(int i = 0; i < 4; i++)
 														  * staticData[0xx10010000 + i] = temp[i];
 														  */
-		public static Dictionary<uint, uint> stackData;
+		public static Dictionary<uint, int> stackData;
 	}
 }

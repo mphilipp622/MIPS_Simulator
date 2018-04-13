@@ -36,7 +36,9 @@ namespace MIPS_Simulator
 		public void ParseInstruction(string instruction)
 		{
 			uint newInst = Convert.ToUInt32(instruction, 16);
-			
+
+			UIManager.instance.CloseInputPanel(); // close input panel whenever new instruction is fetched
+
 			Globals.AdvancePC(4); // advance program counter as soon as we fetch an instruction
 
 			if (GetOpCode(newInst) == 0)

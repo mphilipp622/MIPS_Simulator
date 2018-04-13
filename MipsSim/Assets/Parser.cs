@@ -37,7 +37,9 @@ namespace MIPS_Simulator
 				instRead.ParseAndPrintInstruction(line);
 			}
 
-			ParseDataSection();
+			MemoryInitializer.InitStaticData(lines);
+			MemoryInitializer.InitStack();
+			MemoryInitializer.InitTextData();
 		}
 
 		// Get the next line in the text file
@@ -53,35 +55,6 @@ namespace MIPS_Simulator
 			}
 
 			return null;
-		}
-
-		// finds the .data section and will tell Globals.staticData to initialize with that data.
-		void ParseDataSection()
-		{
-			// Find the line where .data is declared
-			int index = 0;
-			foreach(string line in lines)
-			{
-				if (line.Contains("DATA SEGMENT"))
-					break;
-				index++;
-			}
-
-			Globals.staticData = new Dictionary<uint, int>();
-
-			uint memIndex = 0x10010000;
-
-			for (int i = index + 1; i < lines.Count; i++)
-			{
-				string[] values = lines[i].Split(' '); // grab each hex value in the line
-
-				int data = Convert.ToInt32(values[1], 16); // get data value as hex
-
-				Globals.staticData.Add(memIndex, data);
-				//Debug.Log("[" + memIndex.ToString("X") + "]    " + Globals.staticData[memIndex].ToString("X"));
-				memIndex += 4;
-			}
-
 		}
 
 		public void ExecuteLine()
