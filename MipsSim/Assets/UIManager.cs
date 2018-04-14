@@ -298,4 +298,35 @@ public class UIManager : MonoBehaviour {
 	{
 		inputPanel.SetActive(false);
 	}
+
+	public void GetInput()
+	{
+		// returned int goes into $v0
+		if(inputField.contentType == InputField.ContentType.IntegerNumber)
+			OperationManager.registers.registerTable[2].value = Convert.ToInt32(inputField.text);
+		else if(inputField.contentType == InputField.ContentType.Alphanumeric)
+		{
+			// if we're reading string
+			string newString = inputField.text;
+
+			Byte[] chars = BitConverter.GetBytes(Convert.ToInt32(newString));
+			Array.Reverse(chars); // split the string up into bytes
+
+			uint memIndex = OperationManager.registers.registerTable[4].value; // get memory address to save into
+			int count = 0; // counter for splitting string into 4 byte segments
+
+			for(int i = 0; i < newString.Length; i++)
+			{
+				if (Globals.staticData.ContainsKey(memIndex)) // if we already have data at this memory address, overwrite it.
+					Globals.staticData[memIndex] = BitConverter.ToInt32(chars, count);
+				else // otherwise, add a new memory index and store bytes into it
+					Globals.staticData.Add(memIndex, BitConverter.ToInt32(chars, count));
+
+				count += 4; // increment our starting index for bit conversion by 4
+				memIndex += 4; // increment memory index by 4.
+			}
+
+	
+		}
+	}
 }

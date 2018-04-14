@@ -409,6 +409,8 @@ namespace MIPS_Simulator
 			}
 			else if (code == 8)
 				UIManager.instance.ReadString();
+			else if (code == 10)
+				Application.Quit(); // kill application
 		}
 
 		///////////////////////////////////
