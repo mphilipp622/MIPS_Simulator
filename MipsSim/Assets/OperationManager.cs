@@ -195,7 +195,7 @@ namespace MIPS_Simulator
 		// Jump register. Stores rs value into program counter
 		void JR(byte rs, byte rt, byte rd, byte shamt)
 		{
-			Globals.PC = Convert.ToUInt32(registers.registerTable[rs].value);
+			Globals.PC = Convert.ToInt32(registers.registerTable[rs].value);
 
 			RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
 		}
@@ -204,7 +204,7 @@ namespace MIPS_Simulator
 		void JALR(byte rs, byte rt, byte rd, byte shamt)
 		{
 			registers.registerTable[31].value = Globals.PC + 4;
-			Globals.PC = Convert.ToUInt32(registers.registerTable[rs].value);
+			Globals.PC = Convert.ToInt32(registers.registerTable[rs].value);
 
 			RegisterTextManager.instance.SetRegisterText(31, "$ra", registers.registerTable[31].value);
 			RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
@@ -446,7 +446,10 @@ namespace MIPS_Simulator
 			if (registers.registerTable[rs].value == registers.registerTable[rt].value)
 			{
 				//Globals.AdvancePC((uint) (immediate << 2));
-				Globals.PC = immediate;
+				int offset = Convert.ToInt32(immediate);
+				offset = (offset << 2) - 4;
+
+				Globals.PC += offset;
 				RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
 			}
 		}
@@ -458,9 +461,11 @@ namespace MIPS_Simulator
 			{
 				//Globals.AdvancePC((uint)(immediate << 2));
 				int offset = Convert.ToInt32(immediate);
-				offset = offset << 2;
+				offset = (offset << 2) - 4;
 
 				Globals.PC += offset;
+				Debug.Log("Branch to Address    " + Globals.PC.ToString("X"));
+
 				RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
 			}
 		}
@@ -469,7 +474,10 @@ namespace MIPS_Simulator
 		{
 			if (registers.registerTable[rs].value <= 0)
 			{
-				Globals.PC = immediate;
+				int offset = Convert.ToInt32(immediate);
+				offset = (offset << 2) - 4;
+
+				Globals.PC += offset;
 				RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
 			}
 		}
@@ -478,7 +486,10 @@ namespace MIPS_Simulator
 		{
 			if (registers.registerTable[rs].value > 0)
 			{
-				Globals.PC = immediate;
+				int offset = Convert.ToInt32(immediate);
+				offset = (offset << 2) - 4;
+
+				Globals.PC += offset;
 				RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
 			}
 		}
@@ -616,6 +627,8 @@ namespace MIPS_Simulator
 
 			uint offset = Convert.ToUInt32(registers.registerTable[rs].value + immediate);
 
+			Debug.Log("LW " + registers.registerTable[rt].alias + ", " + immediate.ToString("X") + "(" + registers.registerTable[rs].alias + ")");
+
 			if (registers.registerTable[rs].alias == "$sp")
 				// load from stack
 				registers.registerTable[rt].value = Globals.stackData[offset];
@@ -749,7 +762,11 @@ namespace MIPS_Simulator
 		// Jump command.
 		void J(uint address)
 		{
-			Globals.PC = Convert.ToInt32(address);
+			int offset = Convert.ToInt32(address << 2);
+
+			int topBits = (int) (Globals.PC & 0xF0000000);
+
+			Globals.PC = (topBits | offset) - 4;
 			//Globals.PC = Globals.nPC;
 			//Globals.nPC = (Globals.PC & 0xF0000000) | (address << 2);
 			RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
@@ -759,7 +776,12 @@ namespace MIPS_Simulator
 		void Jal(uint address)
 		{
 			registers.registerTable[31].value = Globals.PC + 8; // r31 is $ra.
-			Globals.PC = Convert.ToInt32(address);
+
+			int offset = Convert.ToInt32(address << 2);
+
+			int topBits = (int)(Globals.PC & 0xF0000000);
+
+			Globals.PC = (topBits | offset) - 4;
 			//Globals.PC = Globals.nPC;
 			//Globals.nPC = (Globals.PC & 0xf0000000) | (address << 2);
 			RegisterTextManager.instance.SetRegisterText(31, "ra", registers.registerTable[31].value);

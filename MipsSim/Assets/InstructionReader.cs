@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MIPS_Simulator
 {
@@ -13,7 +14,6 @@ namespace MIPS_Simulator
 		public InstructionReader()
 		{
 			opManager = new OperationManager();
-			
 		}
 
 		public void ParseAndPrintInstruction(string instruction)
@@ -33,20 +33,23 @@ namespace MIPS_Simulator
 				UIManager.instance.WriteDecodedIFormat(GetOpCode(newInst), GetRS(newInst), GetRT(newInst), GetImmediate(newInst));
 		}
 
-		public void ParseInstruction(string instruction)
+		public void ParseInstruction()
 		{
-			uint newInst = Convert.ToUInt32(instruction, 16);
+			//uint newInst = Convert.ToUInt32(instruction, 16);
 
 			UIManager.instance.CloseInputPanel(); // close input panel whenever new instruction is fetched
 
-			Globals.AdvancePC(4); // advance program counter as soon as we fetch an instruction
+			Debug.Log(Globals.PC.ToString("X") + "    " + Globals.textData[(uint)Globals.PC].ToString("X"));
+			int newInst = Convert.ToInt32(Globals.textData[(uint) Globals.PC]);
 
-			if (GetOpCode(newInst) == 0)
-				RFormat(newInst); // r format op codes always start with 0
-			else if (GetOpCode(newInst) == 2 || GetOpCode(newInst) == 3)
-				JFormat(newInst);
-			else if (GetOpCode(newInst) > 3)
-				IFormat(newInst);
+			Globals.PC += 4; // advance program counter as soon as we fetch an instruction
+
+			if (GetOpCode((uint)newInst) == 0)
+				RFormat((uint)newInst); // r format op codes always start with 0
+			else if (GetOpCode((uint)newInst) == 2 || GetOpCode((uint)newInst) == 3)
+				JFormat((uint)newInst);
+			else if (GetOpCode((uint)newInst) > 3)
+				IFormat((uint)newInst);
 
 		}
 

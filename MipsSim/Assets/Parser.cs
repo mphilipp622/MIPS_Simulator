@@ -39,7 +39,7 @@ namespace MIPS_Simulator
 
 			MemoryInitializer.InitStaticData(lines);
 			MemoryInitializer.InitStack();
-			MemoryInitializer.InitTextData();
+			MemoryInitializer.InitTextData(lines);
 		}
 
 		// Get the next line in the text file
@@ -59,7 +59,16 @@ namespace MIPS_Simulator
 
 		public void ExecuteLine()
 		{
-			instRead.ParseInstruction(GetLine());
+			instRead.ParseInstruction();
+		}
+
+		public void ExecuteProgram()
+		{
+			while(Globals.textData.ContainsKey((uint)Globals.PC))
+			{ 
+				// should execute program while PC remains valid
+				instRead.ParseInstruction();
+			}
 		}
 
 		void PrintToUI()

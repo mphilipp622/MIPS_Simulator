@@ -53,8 +53,26 @@ public static class MemoryInitializer
 		}
 	}
 
-	public static void InitTextData()
+	public static void InitTextData(List<string> lines)
 	{
+		Globals.textData = new Dictionary<uint, int>();
+
+		uint memIndex = 0x00400000;
+
+		foreach(string line in lines)
+		{
+			// iterate over each line and add their values to the hashtable
+			if (line.Contains("DATA SEGMENT")) // quit if we reach data segment
+				break;
+
+			int instruction = Convert.ToInt32(line, 16);
+
+			Globals.textData.Add(memIndex, instruction);
+			//Debug.Log(memIndex.ToString("X") + "    " + instruction.ToString("X"));
+			memIndex += 4;
+		}
+
+		//RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);
 		Globals.PC = 0x00400000;
 		Globals.nPC = 0x00400004;
 	}

@@ -289,6 +289,11 @@ public class UIManager : MonoBehaviour {
 		Globals.parser.ExecuteLine();
 	}
 
+	public void ExecuteProgram()
+	{
+		Globals.parser.ExecuteProgram();
+	}
+
 	public void CloseInputPanel()
 	{
 		inputPanel.SetActive(false);

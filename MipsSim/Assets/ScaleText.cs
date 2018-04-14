@@ -14,8 +14,8 @@ public class ScaleText : MonoBehaviour
 	void Start ()
 	{
 		contentArea = GetComponent<RectTransform>();
-		textArea = transform.GetChild(0).GetComponent<RectTransform>();
-		text = transform.GetChild(0).GetComponent<Text>();
+		textArea = transform.Find("Text").GetComponent<RectTransform>();
+		text = transform.Find("Text").GetComponent<Text>();
 	}
 	
 	void Update ()

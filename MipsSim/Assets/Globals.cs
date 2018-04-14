@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace MIPS_Simulator
 {
@@ -20,6 +22,15 @@ namespace MIPS_Simulator
 			}
 			set
 			{
+				//Image highlighter = GameObject.FindGameObjectWithTag("Highlighter").GetComponent<Image>();
+
+				//int numberOfSteps = Globals.PC > 0 ? (value % _PC) / 4 : 0; // find out how far highlighter needs to jump
+
+				//if (value < _PC)
+				//	highlighter.rectTransform.anchoredPosition += new Vector2(0, (numberOfSteps * 45f));
+				//else
+				//	highlighter.rectTransform.anchoredPosition -= new Vector2(0, (numberOfSteps * 45f));
+
 				_PC = value;
 
 				RegisterTextManager.instance.SetRegisterText(34, "$PC", _PC);
@@ -47,7 +58,7 @@ namespace MIPS_Simulator
 		}
 
 		// Memory Allocation Dictionaries. Memory address will be used for key, instruction for value
-		public static Dictionary<uint, uint> textData;
+		public static Dictionary<uint, int> textData;
 		public static Dictionary<uint, int> staticData; // key will be base memory address. value will be a byte of the data
 														 /*
 														  * Byte[] temp = BitConverter.GetBytes(0xFF001010);
