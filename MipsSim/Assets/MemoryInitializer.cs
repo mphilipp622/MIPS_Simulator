@@ -12,6 +12,8 @@ public static class MemoryInitializer
 	{
 		Globals.stackData = new Dictionary<uint, int>();
 		Globals.stackData.Add(0x7fffeffc, 0);
+
+		UIManager.instance.WriteTextMemory(0x7fffeffc, 0x00000000);
 	}
 
 	public static void InitStaticData(List<string> lines)
@@ -37,6 +39,7 @@ public static class MemoryInitializer
 
 			Globals.staticData.Add(memIndex, data);
 
+			UIManager.instance.WriteStaticMemory(memIndex, data);
 			//Byte[] bytes = BitConverter.GetBytes(data);
 			//Array.Reverse(bytes); // swap to big endian
 
@@ -68,6 +71,8 @@ public static class MemoryInitializer
 			int instruction = Convert.ToInt32(line, 16);
 
 			Globals.textData.Add(memIndex, instruction);
+
+			UIManager.instance.WriteTextMemory(memIndex, instruction);
 			//Debug.Log(memIndex.ToString("X") + "    " + instruction.ToString("X"));
 			memIndex += 4;
 		}

@@ -118,6 +118,7 @@ public class UIManager : MonoBehaviour {
 
 		consoleText = GameObject.FindGameObjectWithTag("ConsoleContent").GetComponent<ScaleText>();
 		programText = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
+
 	}
 	
 	void Update ()
@@ -328,5 +329,26 @@ public class UIManager : MonoBehaviour {
 
 	
 		}
+	}
+
+	public void WriteStaticMemory(uint addr, int data)
+	{
+		string newLine = string.Format("{0:X}    {1:X}\n", addr, data);
+
+		//memoryText.SetText(newLine);
+	}
+
+	public void WriteStackMemory(uint addr, int data)
+	{
+		string newLine = string.Format("{0:X}    {1:X}\n", addr, data);
+
+		//memoryText.SetText(newLine);
+	}
+
+	public void WriteTextMemory(uint addr, int data)
+	{
+		string newLine = string.Format("{0:X}    {1:X}\n", addr, data);
+
+		//memoryText.SetText(newLine);
 	}
 }

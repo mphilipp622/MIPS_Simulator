@@ -8,6 +8,9 @@ TagManager:
   - ConsoleContent
   - RegisterTextManager
   - Highlighter
+  - StackTextContent
+  - StaticTextContent
+  - TextMemoryContent
   layers:
   - Default
   - TransparentFX
