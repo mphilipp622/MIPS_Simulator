@@ -39,7 +39,7 @@ namespace MIPS_Simulator
 
 			UIManager.instance.CloseInputPanel(); // close input panel whenever new instruction is fetched
 
-			Debug.Log(Globals.PC.ToString("X") + "    " + Globals.textData[(uint)Globals.PC].ToString("X"));
+			//Debug.Log(Globals.PC.ToString("X") + "    " + Globals.textData[(uint)Globals.PC].ToString("X"));
 			int newInst = Convert.ToInt32(Globals.textData[(uint) Globals.PC]);
 
 			Globals.PC += 4; // advance program counter as soon as we fetch an instruction

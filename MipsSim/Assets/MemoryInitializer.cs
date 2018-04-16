@@ -13,7 +13,7 @@ public static class MemoryInitializer
 		Globals.stackData = new Dictionary<uint, int>();
 		Globals.stackData.Add(0x7fffeffc, 0);
 
-		UIManager.instance.WriteTextMemory(0x7fffeffc, 0x00000000);
+		UIManager.instance.WriteStackMemory(0x7fffeffc, 0x00000000);
 	}
 
 	public static void InitStaticData(List<string> lines)

@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 public class ScaleText : MonoBehaviour
 {
+	[SerializeField]
 	RectTransform textArea, contentArea;
+
+	[SerializeField]
 	Text text;
 
 	[SerializeField]
@@ -13,9 +16,9 @@ public class ScaleText : MonoBehaviour
 
 	void Start ()
 	{
-		contentArea = GetComponent<RectTransform>();
-		textArea = transform.Find("Text").GetComponent<RectTransform>();
-		text = transform.Find("Text").GetComponent<Text>();
+		//contentArea = GetComponent<RectTransform>();
+		//textArea = transform.Find("Text").GetComponent<RectTransform>();
+		//text = transform.Find("Text").GetComponent<Text>();
 	}
 	
 	void Update ()

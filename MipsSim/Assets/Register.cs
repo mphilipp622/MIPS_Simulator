@@ -88,6 +88,8 @@ namespace MIPS_Simulator
 					else
 						_value = value; // value keyword is used for C# setters. If we had _value = 5, then value would be 5
 				}
+
+				RegisterTextManager.instance.SetRegisterText(Convert.ToByte(name.Trim('R')), alias, _value); // update register value in UI when value is set
 			}
 		}
     }

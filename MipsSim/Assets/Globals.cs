@@ -33,6 +33,8 @@ namespace MIPS_Simulator
 
 				_PC = value;
 
+				UIManager.instance.SetHighlightedText(_PC);
+
 				RegisterTextManager.instance.SetRegisterText(34, "$PC", _PC);
 			}
 		}

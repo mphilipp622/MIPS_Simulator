@@ -6,7 +6,8 @@ using SFB;
 using MIPS_Simulator;
 using System;
 
-public class UIManager : MonoBehaviour {
+public class UIManager : MonoBehaviour
+{
 
 	public static UIManager instance = null;
 	private string _path;
@@ -19,7 +20,11 @@ public class UIManager : MonoBehaviour {
 	[SerializeField]
 	Text console;
 
-	private ScaleText consoleText, programText;
+	[SerializeField]
+	private ScaleText consoleText, programText, staticMemoryText, stackMemoryText, textMemoryText;
+
+	[SerializeField]
+	GameObject programTextContent, staticTextContent, stackTextContent, textMemContent;
 
 	[SerializeField]
 	GameObject inputPanel;
@@ -29,6 +34,14 @@ public class UIManager : MonoBehaviour {
 
 	[SerializeField]
 	Text outputText;
+
+	// hash table that will keep track of the memory dynamic text objects in the scene
+	Dictionary<uint, DynamicText> memoryDynaTexts, programDynaTexts;
+
+	[SerializeField]
+	GameObject dynamicTextObject;
+
+	uint tempPC;
 
 	// Alias for cleaner lookup of register hash table
 	private Dictionary<byte, Register> registers
@@ -119,6 +132,10 @@ public class UIManager : MonoBehaviour {
 		consoleText = GameObject.FindGameObjectWithTag("ConsoleContent").GetComponent<ScaleText>();
 		programText = GameObject.FindGameObjectWithTag("TextContent").GetComponent<ScaleText>();
 
+		memoryDynaTexts = new Dictionary<uint, DynamicText>();
+		programDynaTexts = new Dictionary<uint, DynamicText>();
+
+		tempPC = 0x003FFFFC; // start 4 below normal PC starting point
 	}
 	
 	void Update ()
@@ -131,6 +148,7 @@ public class UIManager : MonoBehaviour {
 		Tuple<byte, byte> newOp = new Tuple<byte, byte>(op, funct);
 
 		string newLine = null;
+		tempPC += 4;
 
 		if (funct >= 32 || funct == 10 || funct == 11) // format op, rd, rs, rt
 			newLine = String.Format("{0}    {1}, {2}, {3}\n", rFormat[newOp], registers[rd].alias, registers[rs].alias, registers[rt].alias);
@@ -149,12 +167,16 @@ public class UIManager : MonoBehaviour {
 		else if (funct >= 24 && funct <= 27) // MULT, DIV, etc.
 			newLine = String.Format("{0}    {1}, {2}\n", rFormat[newOp], registers[rs].alias, registers[rt].alias);
 
-		programText.SetText(newLine);
+		GameObject newText = (GameObject)Instantiate(dynamicTextObject, programTextContent.transform);
+		programDynaTexts.Add(tempPC, newText.GetComponent<DynamicText>());
+		programDynaTexts[tempPC].SetText(newLine);
+		//programText.SetText(newLine);
 	}
 
 	public void WriteDecodedIFormat(byte op, byte rs, byte rt, dynamic immediate)
 	{
 		string newLine = null;
+		tempPC += 4;
 
 		if (op == 4 || op == 5) // BEQ, BNE
 			newLine = String.Format("{0}    {1}, {2}, {3}\n", iFormat[op], registers[rs].alias, registers[rt].alias, Convert.ToString(immediate * 4));
@@ -167,14 +189,22 @@ public class UIManager : MonoBehaviour {
 		else if (op >= 32) // loads and stores
 			newLine = String.Format("{0}    {1}, {2}({3})\n", iFormat[op], registers[rt].alias, Convert.ToString(immediate), registers[rs].alias);
 
-		programText.SetText(newLine);
+		GameObject newText = (GameObject)Instantiate(dynamicTextObject, programTextContent.transform);
+		programDynaTexts.Add(tempPC, newText.GetComponent<DynamicText>());
+		programDynaTexts[tempPC].SetText(newLine);
+		//programText.SetText(newLine);
 	}
 
 	public void WriteDecodedJFormat(byte op, uint address)
 	{
 		string newLine = string.Format("{0}    {1}\n", jFormat[op], Convert.ToString(address));
+		tempPC += 4;
 
-		programText.SetText(newLine);
+		GameObject newText = (GameObject)Instantiate(dynamicTextObject, programTextContent.transform);
+		programDynaTexts.Add(tempPC, newText.GetComponent<DynamicText>());
+		programDynaTexts[tempPC].SetText(newLine);
+
+		//programText.SetText(newLine);
 	}
 
 	/* 
@@ -303,9 +333,11 @@ public class UIManager : MonoBehaviour {
 	public void GetInput()
 	{
 		// returned int goes into $v0
-		if(inputField.contentType == InputField.ContentType.IntegerNumber)
+		if (inputField.contentType == InputField.ContentType.IntegerNumber)
+		{
 			OperationManager.registers.registerTable[2].value = Convert.ToInt32(inputField.text);
-		else if(inputField.contentType == InputField.ContentType.Alphanumeric)
+		}
+		else if (inputField.contentType == InputField.ContentType.Alphanumeric)
 		{
 			// if we're reading string
 			string newString = inputField.text;
@@ -316,7 +348,7 @@ public class UIManager : MonoBehaviour {
 			uint memIndex = OperationManager.registers.registerTable[4].value; // get memory address to save into
 			int count = 0; // counter for splitting string into 4 byte segments
 
-			for(int i = 0; i < newString.Length; i++)
+			for (int i = 0; i < newString.Length; i++)
 			{
 				if (Globals.staticData.ContainsKey(memIndex)) // if we already have data at this memory address, overwrite it.
 					Globals.staticData[memIndex] = BitConverter.ToInt32(chars, count);
@@ -327,28 +359,65 @@ public class UIManager : MonoBehaviour {
 				memIndex += 4; // increment memory index by 4.
 			}
 
-	
+
 		}
 	}
 
 	public void WriteStaticMemory(uint addr, int data)
 	{
-		string newLine = string.Format("{0:X}    {1:X}\n", addr, data);
+		string newLine = string.Format("{0:X} \t{1:X}\n", addr, data);
 
-		//memoryText.SetText(newLine);
+		if (memoryDynaTexts.ContainsKey(addr))
+			memoryDynaTexts[addr].SetText(newLine);
+		else
+		{
+			GameObject newText = (GameObject)Instantiate(dynamicTextObject, staticTextContent.transform);
+			memoryDynaTexts.Add(addr, newText.GetComponent<DynamicText>());
+			memoryDynaTexts[addr].SetText(newLine);
+		}
+
+		//staticMemoryText.SetText(newLine);
 	}
 
 	public void WriteStackMemory(uint addr, int data)
 	{
-		string newLine = string.Format("{0:X}    {1:X}\n", addr, data);
+		string newLine = string.Format("{0:X} \t{1:X}\n", addr, data);
 
-		//memoryText.SetText(newLine);
+		if (memoryDynaTexts.ContainsKey(addr))
+			memoryDynaTexts[addr].SetText(newLine);
+		else
+		{
+			GameObject newText = (GameObject)Instantiate(dynamicTextObject, stackTextContent.transform);
+			memoryDynaTexts.Add(addr, newText.GetComponent<DynamicText>());
+			memoryDynaTexts[addr].SetText(newLine);
+		}
+		//stackMemoryText.SetText(newLine);
 	}
 
 	public void WriteTextMemory(uint addr, int data)
 	{
-		string newLine = string.Format("{0:X}    {1:X}\n", addr, data);
+		string newLine = string.Format("{0:X} \t{1:X}\n", addr, data);
 
-		//memoryText.SetText(newLine);
+		if (memoryDynaTexts.ContainsKey(addr))
+			memoryDynaTexts[addr].SetText(newLine);
+		else
+		{
+			GameObject newText = (GameObject)Instantiate(dynamicTextObject, textMemContent.transform);
+			memoryDynaTexts.Add(addr, newText.GetComponent<DynamicText>());
+			memoryDynaTexts[addr].SetText(newLine);
+		}
+		//textMemoryText.SetText(newLine);
+	}
+
+	// Sets the currently highlighted text in the program view
+	public void SetHighlightedText(int newPC)
+	{
+		if(programDynaTexts.ContainsKey((uint) newPC))
+		{
+			programDynaTexts[tempPC].Highlight(); // - 4 because we always end up at 4 over due to the instantiation process
+			tempPC = (uint)newPC;
+			programDynaTexts[tempPC].Highlight();
+		}
+		
 	}
 }
