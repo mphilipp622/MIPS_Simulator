@@ -70,7 +70,8 @@ namespace MIPS_Simulator
 
 					_value = value;
 				}
-
+				else if (_alias == "$zero")
+					_value = 0;
 				else
 				{
 					if (value.GetType() == typeof(int) && value > int.MaxValue)
@@ -89,7 +90,12 @@ namespace MIPS_Simulator
 						_value = value; // value keyword is used for C# setters. If we had _value = 5, then value would be 5
 				}
 
-				RegisterTextManager.instance.SetRegisterText(Convert.ToByte(name.Trim('R')), alias, _value); // update register value in UI when value is set
+				if(_alias != "$hi" && _alias != "$lo")
+					RegisterTextManager.instance.SetRegisterText(Convert.ToByte(name.Trim('R')), alias, _value); // update register value in UI when value is set
+				else if(_alias == "$hi")
+					RegisterTextManager.instance.SetRegisterText(32, alias, _value);
+				else if(_alias == "$lo")
+					RegisterTextManager.instance.SetRegisterText(33, alias, _value);
 			}
 		}
     }

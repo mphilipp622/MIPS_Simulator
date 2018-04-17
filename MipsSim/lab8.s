@@ -54,7 +54,8 @@ power:
 	loop:
 		slt $t3, $t4, $t1 # 0 < t1?
 		beq $t3, $0, finish # if 0 < t1 == false
-		mul $t0, $t0, $a0 # temp = temp * x
+		mult $t0, $a0 # temp = temp * x
+		mflo $t0
 		addi $t1, $t1, -1 # i--
 		j loop
 

@@ -37,6 +37,6 @@ public class RegisterTextManager : MonoBehaviour
 	public void SetRegisterText(byte reg, string regName, dynamic val)
 	{
 		//Debug.Log(reg + "    " + regName + "    " + val);
-		registerText[reg].text = regName + " = " + val.ToString("X");
+		registerText[reg].text = String.Format("{0} = {1:X}", regName, val);
 	}
 }

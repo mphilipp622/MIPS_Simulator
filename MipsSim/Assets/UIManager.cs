@@ -407,7 +407,7 @@ public class UIManager : MonoBehaviour
 			memoryDynaTexts[addr].SetText(newLine);
 		}
 
-		Debug.Log(addr.ToString("X") + "    " + data.ToString("X"));
+		//Debug.Log(addr.ToString("X") + "    " + data.ToString("X"));
 		//textMemoryText.SetText(newLine);
 	}
 

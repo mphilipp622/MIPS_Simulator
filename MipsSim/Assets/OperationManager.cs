@@ -56,7 +56,7 @@ namespace MIPS_Simulator
 			//	iFormatOpsU[opCode](rs, rt, (ushort)immediate);
 			//}
 			//else
-				iFormatOps[opCode](rs, rt, (short)immediate);
+			iFormatOps[opCode](rs, rt, (short)immediate);
 		}
 
 		public void ExecuteJFormatOp(byte opCode, uint newAddress)
@@ -445,7 +445,7 @@ namespace MIPS_Simulator
 		// Branch if Equal. 
 		void Beq(byte rs, byte rt, short immediate)
 		{
-			if (registers.registerTable[rs].value == registers.registerTable[rt].value)
+			if (Convert.ToInt32(registers.registerTable[rs].value) == Convert.ToInt32(registers.registerTable[rt].value))
 			{
 				//Globals.AdvancePC((uint) (immediate << 2));
 				int offset = Convert.ToInt32(immediate);
@@ -459,7 +459,7 @@ namespace MIPS_Simulator
 		// Branch if Not Equal.
 		void Bne(byte rs, byte rt, short immediate)
 		{
-			if (registers.registerTable[rs].value != registers.registerTable[rt].value)
+			if (Convert.ToInt32(registers.registerTable[rs].value) != Convert.ToInt32(registers.registerTable[rt].value))
 			{
 				//Globals.AdvancePC((uint)(immediate << 2));
 				int offset = Convert.ToInt32(immediate);
@@ -474,7 +474,7 @@ namespace MIPS_Simulator
 
 		void Blez(byte rs, byte rt, short immediate)
 		{
-			if (registers.registerTable[rs].value <= 0)
+			if (Convert.ToInt32(registers.registerTable[rs].value) <= 0)
 			{
 				int offset = Convert.ToInt32(immediate);
 				offset = (offset << 2) - 4;
@@ -486,7 +486,7 @@ namespace MIPS_Simulator
 
 		void Bgtz(byte rs, byte rt, short immediate)
 		{
-			if (registers.registerTable[rs].value > 0)
+			if (Convert.ToInt32(registers.registerTable[rs].value) > 0)
 			{
 				int offset = Convert.ToInt32(immediate);
 				offset = (offset << 2) - 4;
@@ -779,11 +779,10 @@ namespace MIPS_Simulator
 		// Jump command.
 		void J(uint address)
 		{
-			int offset = Convert.ToInt32(address << 2);
+			int offset = Convert.ToInt32(address);
+			offset = (offset << 2);
 
-			int topBits = (int) (Globals.PC & 0xF0000000);
-
-			Globals.PC = (topBits | offset) - 4;
+			Globals.PC = offset;
 			//Globals.PC = Globals.nPC;
 			//Globals.nPC = (Globals.PC & 0xF0000000) | (address << 2);
 			RegisterTextManager.instance.SetRegisterText(34, "$PC", Globals.PC);

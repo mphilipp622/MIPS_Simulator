@@ -18,7 +18,7 @@ namespace MIPS_Simulator
 
 		public void ParseAndPrintInstruction(string instruction)
 		{
-			
+
 			uint newInst = Convert.ToUInt32(instruction, 16);
 			//string hexValue = newInst.ToString("X");
 			//newInst = uint.Parse(hexValue, System.Globalization.NumberStyles.HexNumber);
