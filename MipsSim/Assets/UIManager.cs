@@ -197,7 +197,7 @@ public class UIManager : MonoBehaviour
 
 	public void WriteDecodedJFormat(byte op, uint address)
 	{
-		string newLine = string.Format("{0}    {1}\n", jFormat[op], Convert.ToString(address));
+		string newLine = string.Format("{0}    {1}\n", jFormat[op], (address << 2).ToString("X"));
 		tempPC += 4;
 
 		GameObject newText = (GameObject)Instantiate(dynamicTextObject, programTextContent.transform);
@@ -406,6 +406,8 @@ public class UIManager : MonoBehaviour
 			memoryDynaTexts.Add(addr, newText.GetComponent<DynamicText>());
 			memoryDynaTexts[addr].SetText(newLine);
 		}
+
+		Debug.Log(addr.ToString("X") + "    " + data.ToString("X"));
 		//textMemoryText.SetText(newLine);
 	}
 

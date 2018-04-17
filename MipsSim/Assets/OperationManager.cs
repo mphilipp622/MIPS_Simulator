@@ -794,11 +794,16 @@ namespace MIPS_Simulator
 		{
 			registers.registerTable[31].value = Globals.PC + 8; // r31 is $ra.
 
-			int offset = Convert.ToInt32(address << 2);
+			int offset = Convert.ToInt32(address);
+			offset = (offset << 2);
 
-			int topBits = (int)(Globals.PC & 0xF0000000);
+			//Debug.Log(offset.ToString("X"));
+			Globals.PC = offset;
+			//int offset = Convert.ToInt32(address << 2);
 
-			Globals.PC = (topBits | offset) - 4;
+			//int topBits = (int)(Globals.PC & 0xF0000000);
+			//Debug.Log(topBits.ToString("X") + " | " + offset.ToString("X") + " = " + (topBits | offset).ToString("X"));
+			//Globals.PC = (topBits | offset) - 36;
 			//Globals.PC = Globals.nPC;
 			//Globals.nPC = (Globals.PC & 0xf0000000) | (address << 2);
 			//RegisterTextManager.instance.SetRegisterText(31, "ra", registers.registerTable[31].value);
