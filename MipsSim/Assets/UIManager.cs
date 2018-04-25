@@ -248,7 +248,7 @@ public class UIManager : MonoBehaviour
 	{
 		inputPanel.SetActive(true);
 		outputText.text = Convert.ToString(val);
-		consoleText.SetText(Convert.ToString(val));
+		consoleText.SetText(Convert.ToString(val) + "\n");
 	}
 
 	public void PrintString(dynamic memoryAddress)
@@ -339,6 +339,7 @@ public class UIManager : MonoBehaviour
 
 	public void ExecuteProgram()
 	{
+		Globals.execute = true;
 		Globals.parser.ExecuteProgram();
 	}
 
@@ -377,9 +378,14 @@ public class UIManager : MonoBehaviour
 				count += 4; // increment our starting index for bit conversion by 4
 				memIndex += 4; // increment memory index by 4.
 			}
-
-
 		}
+
+		PrintInt(OperationManager.registers.registerTable[2].value);
+
+		Globals.canProceed = true;
+		if (Globals.execute)
+			Globals.parser.ExecuteProgram(); // continue executing program.
+
 	}
 
 	public void WriteStaticMemory(uint addr, int data)
@@ -439,6 +445,14 @@ public class UIManager : MonoBehaviour
 			tempPC = (uint)newPC;
 			programDynaTexts[tempPC].Highlight();
 		}
+		
+	}
+
+	IEnumerator WaitForInput()
+	{
+		while (!Input.GetKeyDown(KeyCode.KeypadEnter) && !Input.GetKeyDown(KeyCode.Return))
+			yield return null;
+
 		
 	}
 }

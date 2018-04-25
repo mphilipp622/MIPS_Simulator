@@ -405,6 +405,7 @@ namespace MIPS_Simulator
 				UIManager.instance.PrintString(registers.registerTable[4].value);
 			else if (code == 5)
 			{
+				Globals.canProceed = false;
 				UIManager.instance.ReadInt(); // STILL NEED TO STORE  INT INTO V0
 				RegisterTextManager.instance.SetRegisterText(2, registers.registerTable[2].alias, registers.registerTable[2].value); // Set $v0 text
 			}

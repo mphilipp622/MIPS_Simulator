@@ -71,9 +71,12 @@ namespace MIPS_Simulator
 
 			uint difference = address % 0x10010000;
 			uint destAddr = 0x10010000 + difference - (difference % 4);
-			Debug.Log(destAddr.ToString("X"));
+
 			return staticData[destAddr];
 		}
 		public static Dictionary<uint, int> stackData;
+
+		public static bool canProceed = true;
+		public static bool execute = false;
 	}
 }

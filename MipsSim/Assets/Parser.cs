@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
+using System.Collections;
 
 namespace MIPS_Simulator
 {
@@ -59,13 +60,14 @@ namespace MIPS_Simulator
 
 		public void ExecuteLine()
 		{
-			instRead.ParseInstruction();
+			if(Globals.canProceed)
+				instRead.ParseInstruction();
 		}
 
 		public void ExecuteProgram()
 		{
-			while(Globals.textData.ContainsKey((uint)Globals.PC))
-			{ 
+			while(Globals.textData.ContainsKey((uint)Globals.PC) && Globals.canProceed)
+			{
 				// should execute program while PC remains valid
 				instRead.ParseInstruction();
 			}
