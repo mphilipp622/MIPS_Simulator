@@ -265,7 +265,6 @@ public class UIManager : MonoBehaviour
 		{
 			// Keep reading memory until we find null termination or we hit a non-string data type.
 			Byte[] chars = BitConverter.GetBytes(Globals.staticData[offset]);
-			Array.Reverse(chars);
 
 			foreach (byte b in chars) // for every byte in the memory address we're looking for
 			{
@@ -343,7 +342,7 @@ public class UIManager : MonoBehaviour
 			string newString = inputField.text;
 
 			Byte[] chars = BitConverter.GetBytes(Convert.ToInt32(newString));
-			Array.Reverse(chars); // split the string up into bytes
+			//Array.Reverse(chars); // split the string up into bytes
 
 			uint memIndex = OperationManager.registers.registerTable[4].value; // get memory address to save into
 			int count = 0; // counter for splitting string into 4 byte segments

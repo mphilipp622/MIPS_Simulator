@@ -509,18 +509,18 @@ namespace MIPS_Simulator
 			uint offset = Convert.ToUInt32(registers.registerTable[rs].value);
 
 			Byte[] destBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
-			Array.Reverse(destBytes);
+			//Array.Reverse(destBytes);
 
 			if (registers.registerTable[rs].alias == "$sp")
 			{
 				// load from stack
 				tempBytes = BitConverter.GetBytes(Globals.stackData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 			else
 			{
 				tempBytes = BitConverter.GetBytes(Globals.staticData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 
 			destBytes[0] = tempBytes[immediate]; // load halfword at immediate + 0 and immediate + 1 into destination
@@ -537,18 +537,18 @@ namespace MIPS_Simulator
 			uint offset = Convert.ToUInt32(registers.registerTable[rs].value);
 
 			Byte[] destBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
-			Array.Reverse(destBytes);
+			//Array.Reverse(destBytes);
 
 			if (registers.registerTable[rs].alias == "$sp")
 			{
 				// load from stack
 				tempBytes = BitConverter.GetBytes(Globals.stackData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 			else
 			{
 				tempBytes = BitConverter.GetBytes(Globals.staticData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 
 			destBytes[0] = tempBytes[immediate]; // load halfword at immediate + 0 and immediate + 1 into destination
@@ -567,18 +567,18 @@ namespace MIPS_Simulator
 			uint offset = Convert.ToUInt32(registers.registerTable[rs].value);
 
 			Byte[] destBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
-			Array.Reverse(destBytes);
+			//Array.Reverse(destBytes);
 
 			if (registers.registerTable[rs].alias == "$sp")
 			{
 				// load from stack
 				tempBytes = BitConverter.GetBytes(Globals.stackData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 			else
 			{
 				tempBytes = BitConverter.GetBytes(Globals.staticData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 
 			for (int i = 0; i < 2; i++)
@@ -599,18 +599,18 @@ namespace MIPS_Simulator
 			uint offset = Convert.ToUInt32(registers.registerTable[rs].value);
 
 			Byte[] destBytes = BitConverter.GetBytes(registers.registerTable[rt].value);
-			Array.Reverse(destBytes);
+			//Array.Reverse(destBytes);
 
 			if (registers.registerTable[rs].alias == "$sp")
 			{
 				// load from stack
 				tempBytes = BitConverter.GetBytes(Globals.stackData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 			else
 			{
 				tempBytes = BitConverter.GetBytes(Globals.staticData[offset]); // get stack data's bytes
-				Array.Reverse(tempBytes); // switch to big endian
+				//Array.Reverse(tempBytes); // switch to big endian
 			}
 
 			for (int i = 0; i < 2; i++)
@@ -660,14 +660,14 @@ namespace MIPS_Simulator
 		{
 			// get the byte from our register
 			Byte[] tempBytes = BitConverter.GetBytes(registers.registerTable[rt].value); // get new value's bytes
-			Array.Reverse(tempBytes); // switch to big endian
+			//Array.Reverse(tempBytes); // switch to big endian
 
 			Byte[] destBytes = null;
 
 			if (registers.registerTable[rs].alias == "$sp") // store to stack, not static
 			{
 				destBytes = BitConverter.GetBytes(Globals.stackData[(uint)registers.registerTable[rs].value]); // get bytes from destination value
-				Array.Reverse(destBytes); // switch them to big endian
+				//Array.Reverse(destBytes); // switch them to big endian
 
 				destBytes[immediate] = tempBytes[0]; // write least sig values from rt into stack
 
@@ -679,7 +679,7 @@ namespace MIPS_Simulator
 			{
 				// otherwise, we store onto static data segment.
 				destBytes = BitConverter.GetBytes(Globals.staticData[(uint)registers.registerTable[rs].value]); // get bytes from destination value
-				Array.Reverse(destBytes); // switch them to big endian
+				//Array.Reverse(destBytes); // switch them to big endian
 
 				destBytes[immediate] = tempBytes[0]; // write least sig values from rt into stack
 
@@ -698,14 +698,14 @@ namespace MIPS_Simulator
 				return;
 
 			Byte[] tempBytes = BitConverter.GetBytes(registers.registerTable[rt].value); // get new value's bytes
-			Array.Reverse(tempBytes); // switch to big endian
+			//Array.Reverse(tempBytes); // switch to big endian
 
 			Byte[] destBytes = null;
 
 			if (registers.registerTable[rs].alias == "$sp") // store to stack, not static
 			{
 				destBytes = BitConverter.GetBytes(Globals.stackData[(uint)registers.registerTable[rs].value]); // get bytes from destination value
-				Array.Reverse(destBytes); // switch them to big endian
+				//Array.Reverse(destBytes); // switch them to big endian
 
 				for (int i = 0; i < 2; i++)
 					destBytes[immediate + i] = tempBytes[i]; // write least sig values from rt into stack
@@ -718,7 +718,7 @@ namespace MIPS_Simulator
 			{
 				// otherwise, we store onto static data segment.
 				destBytes = BitConverter.GetBytes(Globals.staticData[(uint)registers.registerTable[rs].value]); // get bytes from destination value
-				Array.Reverse(destBytes); // switch them to big endian
+				//Array.Reverse(destBytes); // switch them to big endian
 
 				for (int i = 0; i < 2; i++)
 					destBytes[immediate + i] = tempBytes[i]; // write least sig values from rt into stack
