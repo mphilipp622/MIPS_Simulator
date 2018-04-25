@@ -45,7 +45,7 @@ public class ScaleText : MonoBehaviour
 	{
 		text.text += newLine;
 
-		if(newLine.EndsWith("\n")) // if line ends, we need to scale text area downwards
+		if (newLine.EndsWith("\n")) // if line ends, we need to scale text area downwards
 			Scale();
 	}
 }

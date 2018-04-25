@@ -264,18 +264,36 @@ public class UIManager : MonoBehaviour
 		while (nextChar != 0)
 		{
 			// Keep reading memory until we find null termination or we hit a non-string data type.
-			Byte[] chars = BitConverter.GetBytes(Globals.staticData[offset]);
-
-			foreach (byte b in chars) // for every byte in the memory address we're looking for
+			if(offset % 4 != 0)
 			{
-				nextChar = Convert.ToChar(b);
-				if (nextChar == 0)
-					break;
+				Byte[] chars = BitConverter.GetBytes(Globals.GetStaticData(offset));
 
-				output += nextChar;
+				for (uint i = offset % 4; i < chars.Length; i++)
+				{
+					nextChar = Convert.ToChar(chars[i]);
+					if (nextChar == 0)
+						break;
+
+					output += nextChar;
+				}
+
+				offset += 4;
 			}
+			else
+			{
+				Byte[] chars = BitConverter.GetBytes(Globals.staticData[offset]);
 
-			offset += 4;
+				foreach (byte b in chars) // for every byte in the memory address we're looking for
+				{
+					nextChar = Convert.ToChar(b);
+					if (nextChar == 0)
+						break;
+
+					output += nextChar;
+				}
+
+				offset += 4;
+			}
 		}
 			
 		inputPanel.SetActive(true);
@@ -326,6 +344,8 @@ public class UIManager : MonoBehaviour
 
 	public void CloseInputPanel()
 	{
+		inputField.text = "";
+		inputField.DeactivateInputField();
 		inputPanel.SetActive(false);
 	}
 

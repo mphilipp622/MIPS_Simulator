@@ -53,7 +53,7 @@ namespace MIPS_Simulator
 				else if (i == 30)
 					newRegister = new Register("R30", "$fp", 0);
 				else if (i == 31)
-					newRegister = new Register("R31", "$ra", 0);
+					newRegister = new Register("R31", "$ra", 0x00400018);
 
 				_registers.Add(i, newRegister); 
 			}

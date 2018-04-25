@@ -1,0 +1,385 @@
+User Text Segment [00400000]..[00440000]
+[00400000] 8fa40000  lw $4, 0($29)            ; 183: lw $a0 0($sp) # argc 
+[00400004] 27a50004  addiu $5, $29, 4         ; 184: addiu $a1 $sp 4 # argv 
+[00400008] 24a60004  addiu $6, $5, 4          ; 185: addiu $a2 $a1 4 # envp 
+[0040000c] 00041080  sll $2, $4, 2            ; 186: sll $v0 $a0 2 
+[00400010] 00c23021  addu $6, $6, $2          ; 187: addu $a2 $a2 $v0 
+[00400014] 0c100009  jal 0x00400024 [main]    ; 188: jal main 
+[00400018] 00000000  nop                      ; 189: nop 
+[0040001c] 3402000a  ori $2, $0, 10           ; 191: li $v0 10 
+[00400020] 0000000c  syscall                  ; 192: syscall # syscall 10 (exit) 
+[00400024] 03e08021  addu $16, $31, $0        ; 6: addu $s0, $ra, $0 
+[00400028] 34020004  ori $2, $0, 4            ; 7: li $v0, 4 
+[0040002c] 3c011001  lui $1, 4097 [msg1]      ; 8: la $a0, msg1 
+[00400030] 34240000  ori $4, $1, 0 [msg1]     
+[00400034] 0000000c  syscall                  ; 9: syscall 
+[00400038] 34020005  ori $2, $0, 5            ; 12: li $v0, 5 
+[0040003c] 0000000c  syscall                  ; 13: syscall 
+[00400040] 00404021  addu $8, $2, $0          ; 15: addu $t0, $v0, $0 # move first int into t0 
+[00400044] 34020004  ori $2, $0, 4            ; 17: li $v0, 4 
+[00400048] 3c011001  lui $1, 4097 [msg1]      ; 18: la $a0, msg1 
+[0040004c] 34240000  ori $4, $1, 0 [msg1]     
+[00400050] 0000000c  syscall                  ; 19: syscall 
+[00400054] 34020005  ori $2, $0, 5            ; 22: li $v0, 5 
+[00400058] 0000000c  syscall                  ; 23: syscall 
+[0040005c] 00404821  addu $9, $2, $0          ; 25: addu $t1, $v0, $0 # move second int into t1 
+[00400060] 01002021  addu $4, $8, $0          ; 26: addu $a0, $t0, $0 # move first int into a0 
+[00400064] 01202821  addu $5, $9, $0          ; 27: addu $a1, $t1, $0 # move second into into a1 
+[00400068] 0c100029  jal 0x004000a4 [power]   ; 29: jal power 
+[0040006c] 00406821  addu $13, $2, $0         ; 31: addu $t5, $v0, $0 # move result into t5 
+[00400070] 34020004  ori $2, $0, 4            ; 33: li $v0, 4 
+[00400074] 3c011001  lui $1, 4097 [msg2]      ; 34: la $a0, msg2 
+[00400078] 34240021  ori $4, $1, 33 [msg2]    
+[0040007c] 0000000c  syscall                  ; 35: syscall # Print First Result Message 
+[00400080] 34020001  ori $2, $0, 1            ; 37: li $v0, 1 
+[00400084] 01a02021  addu $4, $13, $0         ; 38: addu $a0, $t5, $0 # move result into a0 
+[00400088] 0000000c  syscall                  ; 39: syscall # print result 
+[0040008c] 34020004  ori $2, $0, 4            ; 41: li $v0, 4 
+[00400090] 3c011001  lui $1, 4097 [msg3]      ; 42: la $a0, msg3 
+[00400094] 3424002b  ori $4, $1, 43 [msg3]    
+[00400098] 0000000c  syscall                  ; 43: syscall # print line ending 
+[0040009c] 0010f821  addu $31, $0, $16        ; 45: addu $ra, $0, $s0 
+[004000a0] 03e00008  jr $31                   ; 46: jr $ra 
+[004000a4] 23bdfffc  addi $29, $29, -4        ; 49: addi $sp, $sp, -4 # allocate stack data 
+[004000a8] 20080001  addi $8, $0, 1           ; 50: addi $t0, $0, 1 # set t0 to 1 
+[004000ac] 01806021  addu $12, $12, $0        ; 51: addu $t4, $t4, $0 # move 0 into t4 
+[004000b0] 00a04821  addu $9, $5, $0          ; 52: addu $t1, $a1, $0 # move y into t1 
+[004000b4] 0189582a  slt $11, $12, $9         ; 55: slt $t3, $t4, $t1 # 0 
+[004000b8] 11600005  beq $11, $0, 20 [finish-0x004000b8]
+[004000bc] 01040018  mult $8, $4              ; 57: mult $t0, $a0 # temp = temp * x 
+[004000c0] 00004012  mflo $8                  ; 58: mflo $t0 
+[004000c4] 2129ffff  addi $9, $9, -1          ; 59: addi $t1, $t1, -1 # i-- 
+[004000c8] 0810002d  j 0x004000b4 [loop]      ; 60: j loop 
+[004000cc] 01001021  addu $2, $8, $0          ; 63: addu $v0, $t0, $0 # move final result into v0 
+[004000d0] 23bd0004  addi $29, $29, 4         ; 64: addi $sp, $sp, 4 # restore stack 
+[004000d4] 03e00008  jr $31                   ; 65: jr $ra 
+
+Kernel Text Segment [80000000]..[80010000]
+[80000180] 0001d821  addu $27, $0, $1         ; 90: move $k1 $at # Save $at 
+[80000184] 3c019000  lui $1, -28672           ; 92: sw $v0 s1 # Not re-entrant and we can't trust $sp 
+[80000188] ac220200  sw $2, 512($1)           
+[8000018c] 3c019000  lui $1, -28672           ; 93: sw $a0 s2 # But we need to use these registers 
+[80000190] ac240204  sw $4, 516($1)           
+[80000194] 401a6800  mfc0 $26, $13            ; 95: mfc0 $k0 $13 # Cause register 
+[80000198] 001a2082  srl $4, $26, 2           ; 96: srl $a0 $k0 2 # Extract ExcCode Field 
+[8000019c] 3084001f  andi $4, $4, 31          ; 97: andi $a0 $a0 0x1f 
+[800001a0] 34020004  ori $2, $0, 4            ; 101: li $v0 4 # syscall 4 (print_str) 
+[800001a4] 3c049000  lui $4, -28672 [__m1_]   ; 102: la $a0 __m1_ 
+[800001a8] 0000000c  syscall                  ; 103: syscall 
+[800001ac] 34020001  ori $2, $0, 1            ; 105: li $v0 1 # syscall 1 (print_int) 
+[800001b0] 001a2082  srl $4, $26, 2           ; 106: srl $a0 $k0 2 # Extract ExcCode Field 
+[800001b4] 3084001f  andi $4, $4, 31          ; 107: andi $a0 $a0 0x1f 
+[800001b8] 0000000c  syscall                  ; 108: syscall 
+[800001bc] 34020004  ori $2, $0, 4            ; 110: li $v0 4 # syscall 4 (print_str) 
+[800001c0] 3344003c  andi $4, $26, 60         ; 111: andi $a0 $k0 0x3c 
+[800001c4] 3c019000  lui $1, -28672           ; 112: lw $a0 __excp($a0) 
+[800001c8] 00240821  addu $1, $1, $4          
+[800001cc] 8c240180  lw $4, 384($1)           
+[800001d0] 00000000  nop                      ; 113: nop 
+[800001d4] 0000000c  syscall                  ; 114: syscall 
+[800001d8] 34010018  ori $1, $0, 24           ; 116: bne $k0 0x18 ok_pc # Bad PC exception requires special checks 
+[800001dc] 143a0008  bne $1, $26, 32 [ok_pc-0x800001dc] 
+[800001e0] 00000000  nop                      ; 117: nop 
+[800001e4] 40047000  mfc0 $4, $14             ; 119: mfc0 $a0 $14 # EPC 
+[800001e8] 30840003  andi $4, $4, 3           ; 120: andi $a0 $a0 0x3 # Is EPC word-aligned? 
+[800001ec] 10040004  beq $0, $4, 16 [ok_pc-0x800001ec]
+[800001f0] 00000000  nop                      ; 122: nop 
+[800001f4] 3402000a  ori $2, $0, 10           ; 124: li $v0 10 # Exit on really bad PC 
+[800001f8] 0000000c  syscall                  ; 125: syscall 
+[800001fc] 34020004  ori $2, $0, 4            ; 128: li $v0 4 # syscall 4 (print_str) 
+[80000200] 3c019000  lui $1, -28672 [__m2_]   ; 129: la $a0 __m2_ 
+[80000204] 3424000d  ori $4, $1, 13 [__m2_]   
+[80000208] 0000000c  syscall                  ; 130: syscall 
+[8000020c] 001a2082  srl $4, $26, 2           ; 132: srl $a0 $k0 2 # Extract ExcCode Field 
+[80000210] 3084001f  andi $4, $4, 31          ; 133: andi $a0 $a0 0x1f 
+[80000214] 14040002  bne $0, $4, 8 [ret-0x80000214]; 134: bne $a0 0 ret # 0 means exception was an interrupt 
+[80000218] 00000000  nop                      ; 135: nop 
+[8000021c] 401a7000  mfc0 $26, $14            ; 145: mfc0 $k0 $14 # Bump EPC register 
+[80000220] 275a0004  addiu $26, $26, 4        ; 146: addiu $k0 $k0 4 # Skip faulting instruction 
+[80000224] 409a7000  mtc0 $26, $14            ; 148: mtc0 $k0 $14 
+[80000228] 3c019000  lui $1, -28672           ; 153: lw $v0 s1 # Restore other registers 
+[8000022c] 8c220200  lw $2, 512($1)           
+[80000230] 3c019000  lui $1, -28672           ; 154: lw $a0 s2 
+[80000234] 8c240204  lw $4, 516($1)           
+[80000238] 001b0821  addu $1, $0, $27         ; 157: move $at $k1 # Restore $at 
+[8000023c] 40806800  mtc0 $0, $13             ; 160: mtc0 $0 $13 # Clear Cause register 
+[80000240] 401a6000  mfc0 $26, $12            ; 162: mfc0 $k0 $12 # Set Status register 
+[80000244] 375a0001  ori $26, $26, 1          ; 163: ori $k0 0x1 # Interrupts enabled 
+[80000248] 409a6000  mtc0 $26, $12            ; 164: mtc0 $k0 $12 
+[8000024c] 42000018  eret                     ; 167: eret 
+
+
+User data segment [10000000]..[10040000]
+[10000000]..[1000ffff]  00000000
+[10010000]    61656c50  65206573  7265746e  206e6120    P l e a s e   e n t e r   a n   
+[10010010]    65746e69  20726567  626d756e  203a7265    i n t e g e r   n u m b e r :   
+[10010020]    65520900  746c7573  0a00203a  00000000    . . R e s u l t :   . . . . . . 
+[10010030]..[1003ffff]  00000000
+
+
+User Stack [7ffff1dc]..[80000000]
+[7ffff1dc]    00000001                                  . . . . 
+[7ffff1e0]    7ffff2b2  00000000  7fffffe1  7fffffb7    . . . . . . . . . . . . . . . . 
+[7ffff1f0]    7fffff9e  7fffff4d  7fffff16  7ffffeda    . . . . M . . . . . . . . . . . 
+[7ffff200]    7ffffea9  7ffffe8f  7ffffe6b  7ffffe38    . . . . . . . . k . . . 8 . . . 
+[7ffff210]    7ffffe2b  7ffffe12  7ffffde5  7ffffdca    + . . . . . . . . . . . . . . . 
+[7ffff220]    7ffffd7e  7ffffd1d  7ffffd06  7ffffce2    ~ . . . . . . . . . . . . . . . 
+[7ffff230]    7ffffcd4  7ffff752  7ffff714  7ffff6f9    . . . . R . . . . . . . . . . . 
+[7ffff240]    7ffff6dc  7ffff694  7ffff682  7ffff66a    . . . . . . . . . . . . j . . . 
+[7ffff250]    7ffff64f  7ffff62b  7ffff602  7ffff5e4    O . . . + . . . . . . . . . . . 
+[7ffff260]    7ffff5a3  7ffff58c  7ffff54f  7ffff520    . . . . . . . . O . . .   . . . 
+[7ffff270]    7ffff50c  7ffff4dd  7ffff4ce  7ffff4b8    . . . . . . . . . . . . . . . . 
+[7ffff280]    7ffff48e  7ffff465  7ffff426  7ffff40e    . . . . e . . . & . . . . . . . 
+[7ffff290]    7ffff3e7  7ffff3d5  7ffff3b7  7ffff365    . . . . . . . . . . . . e . . . 
+[7ffff2a0]    7ffff306  7ffff2f4  00000000  00000000    . . . . . . . . . . . . . . . . 
+[7ffff2b0]    3a430000  6573552f  532f7372  61706165    . . C : / U s e r s / S e a p a 
+[7ffff2c0]    2f61646e  75636f44  746e656d  6f432f73    n d a / D o c u m e n t s / C o 
+[7ffff2d0]    67656c6c  494d2f65  535f5350  6c756d69    l l e g e / M I P S _ S i m u l 
+[7ffff2e0]    726f7461  70694d2f  6d695373  62616c2f    a t o r / M i p s S i m / l a b 
+[7ffff2f0]    00732e38  646e6977  433d7269  49575c3a    8 . s . w i n d i r = C : \ W I 
+[7ffff300]    574f444e  53560053  43303531  4f434d4f    N D O W S . V S 1 5 0 C O M C O 
+[7ffff310]    4f544e4d  3d534c4f  505c3a43  72676f72    M N T O O L S = C : \ P r o g r 
+[7ffff320]    46206d61  73656c69  38782820  4d5c2936    a m   F i l e s   ( x 8 6 ) \ M 
+[7ffff330]    6f726369  74666f73  73695620  206c6175    i c r o s o f t   V i s u a l   
+[7ffff340]    64757453  325c6f69  5c373130  6d6d6f43    S t u d i o \ 2 0 1 7 \ C o m m 
+[7ffff350]    74696e75  6f435c79  6e6f6d6d  6f545c37    u n i t y \ C o m m o n 7 \ T o 
+[7ffff360]    5c736c6f  31535600  4f433034  4f544e4d    o l s \ . V S 1 4 0 C O M N T O 
+[7ffff370]    3d534c4f  505c3a43  72676f72  46206d61    O L S = C : \ P r o g r a m   F 
+[7ffff380]    73656c69  38782820  4d5c2936  6f726369    i l e s   ( x 8 6 ) \ M i c r o 
+[7ffff390]    74666f73  73695620  206c6175  64757453    s o f t   V i s u a l   S t u d 
+[7ffff3a0]    31206f69  5c302e34  6d6d6f43  5c376e6f    i o   1 4 . 0 \ C o m m o n 7 \ 
+[7ffff3b0]    6c6f6f54  55005c73  50524553  49464f52    T o o l s \ . U S E R P R O F I 
+[7ffff3c0]    433d454c  73555c3a  5c737265  70616553    L E = C : \ U s e r s \ S e a p 
+[7ffff3d0]    61646e61  45535500  4d414e52  65533d45    a n d a . U S E R N A M E = S e 
+[7ffff3e0]    6e617061  55006164  44524553  49414d4f    a p a n d a . U S E R D O M A I 
+[7ffff3f0]    4f525f4e  4e494d41  4f525047  454c4946    N _ R O A M I N G P R O F I L E 
+[7ffff400]    4e495a3d  4c2d4547  4f545041  53550050    = Z I N G E - L A P T O P . U S 
+[7ffff410]    4f445245  4e49414d  4e495a3d  4c2d4547    E R D O M A I N = Z I N G E - L 
+[7ffff420]    4f545041  4f550050  454d5049  4745525f    A P T O P . U O I P M E _ R E G 
+[7ffff430]    5441505f  3a433d48  6f72505c  6d617267    _ P A T H = C : \ P r o g r a m 
+[7ffff440]    6c694620  495c7365  6c65746e  726f4320      F i l e s \ I n t e l   C o r 
+[7ffff450]    61726f70  6e6f6974  4253555c  65766f20    p o r a t i o n \ U S B   o v e 
+[7ffff460]    50492072  504d5400  5c3a433d  72657355    r   I P . T M P = C : \ U s e r 
+[7ffff470]    65535c73  6e617061  415c6164  61447070    s \ S e a p a n d a \ A p p D a 
+[7ffff480]    4c5c6174  6c61636f  6d65545c  45540070    t a \ L o c a l \ T e m p . T E 
+[7ffff490]    433d504d  73555c3a  5c737265  70616553    M P = C : \ U s e r s \ S e a p 
+[7ffff4a0]    61646e61  7070415c  61746144  636f4c5c    a n d a \ A p p D a t a \ L o c 
+[7ffff4b0]    545c6c61  00706d65  74737953  6f526d65    a l \ T e m p . S y s t e m R o 
+[7ffff4c0]    433d746f  49575c3a  574f444e  79530053    o t = C : \ W I N D O W S . S y 
+[7ffff4d0]    6d657473  76697244  3a433d65  504f5300    s t e m D r i v e = C : . S O P 
+[7ffff4e0]    494b5f43  494e5f54  3d32534f  695c3a43    C _ K I T _ N I O S 2 = C : \ i 
+[7ffff4f0]    6c65746e  41475046  74696c5f  37315c65    n t e l F P G A _ l i t e \ 1 7 
+[7ffff500]    6e5c312e  32736f69  00736465  53534553    . 1 \ n i o s 2 e d s . S E S S 
+[7ffff510]    4e4e4f49  3d454d41  736e6f43  00656c6f    I O N N A M E = C o n s o l e . 
+[7ffff520]    52415551  5f535554  544f4f52  3d524944    Q U A R T U S _ R O O T D I R = 
+[7ffff530]    695c3a43  6c65746e  41475046  74696c5f    C : \ i n t e l F P G A _ l i t 
+[7ffff540]    37315c65  715c312e  74726175  51007375    e \ 1 7 . 1 \ q u a r t u s . Q 
+[7ffff550]    5f535953  544f4f52  3d524944  695c3a43    S Y S _ R O O T D I R = C : \ i 
+[7ffff560]    6c65746e  41475046  74696c5f  37315c65    n t e l F P G A _ l i t e \ 1 7 
+[7ffff570]    715c312e  74726175  735c7375  5f63706f    . 1 \ q u a r t u s \ s o p c _ 
+[7ffff580]    6c697562  5c726564  006e6962  4c425550    b u i l d e r \ b i n . P U B L 
+[7ffff590]    433d4349  73555c3a  5c737265  6c627550    I C = C : \ U s e r s \ P u b l 
+[7ffff5a0]    50006369  646f4d53  50656c75  3d687461    i c . P S M o d u l e P a t h = 
+[7ffff5b0]    575c3a43  4f444e49  735c5357  65747379    C : \ W I N D O W S \ s y s t e 
+[7ffff5c0]    5c32336d  646e6957  5073776f  7265776f    m 3 2 \ W i n d o w s P o w e r 
+[7ffff5d0]    6c656853  31765c6c  4d5c302e  6c75646f    S h e l l \ v 1 . 0 \ M o d u l 
+[7ffff5e0]    005c7365  676f7250  576d6172  32333436    e s \ . P r o g r a m W 6 4 3 2 
+[7ffff5f0]    5c3a433d  676f7250  206d6172  656c6946    = C : \ P r o g r a m   F i l e 
+[7ffff600]    72500073  6172676f  6c69466d  78287365    s . P r o g r a m F i l e s ( x 
+[7ffff610]    3d293638  505c3a43  72676f72  46206d61    8 6 ) = C : \ P r o g r a m   F 
+[7ffff620]    73656c69  38782820  50002936  72676f72    i l e s   ( x 8 6 ) . P r o g r 
+[7ffff630]    69466d61  3d73656c  505c3a43  72676f72    a m F i l e s = C : \ P r o g r 
+[7ffff640]    46206d61  73656c69  38782820  50002936    a m   F i l e s   ( x 8 6 ) . P 
+[7ffff650]    72676f72  61446d61  433d6174  72505c3a    r o g r a m D a t a = C : \ P r 
+[7ffff660]    6172676f  7461446d  52500061  5345434f    o g r a m D a t a . P R O C E S 
+[7ffff670]    5f524f53  49564552  4e4f4953  3065353d    S O R _ R E V I S I O N = 5 e 0 
+[7ffff680]    52500033  5345434f  5f524f53  4556454c    3 . P R O C E S S O R _ L E V E 
+[7ffff690]    00363d4c  434f5250  4f535345  44495f52    L = 6 . P R O C E S S O R _ I D 
+[7ffff6a0]    49544e45  52454946  746e493d  34366c65    E N T I F I E R = I n t e l 6 4 
+[7ffff6b0]    6d614620  20796c69  6f4d2036  206c6564      F a m i l y   6   M o d e l   
+[7ffff6c0]    53203439  70706574  20676e69  47202c33    9 4   S t e p p i n g   3 ,   G 
+[7ffff6d0]    69756e65  6e49656e  006c6574  434f5250    e n u i n e I n t e l . P R O C 
+[7ffff6e0]    4f535345  52415f52  54494843  34365745    E S S O R _ A R C H I T E W 6 4 
+[7ffff6f0]    413d3233  3436444d  4f525000  53534543    3 2 = A M D 6 4 . P R O C E S S 
+[7ffff700]    415f524f  49484352  54434554  3d455255    O R _ A R C H I T E C T U R E = 
+[7ffff710]    00363878  48544150  3d545845  4d4f432e    x 8 6 . P A T H E X T = . C O M 
+[7ffff720]    58452e3b  422e3b45  2e3b5441  3b444d43    ; . E X E ; . B A T ; . C M D ; 
+[7ffff730]    5342562e  42562e3b  4a2e3b45  4a2e3b53    . V B S ; . V B E ; . J S ; . J 
+[7ffff740]    2e3b4553  3b465357  4853572e  534d2e3b    S E ; . W S F ; . W S H ; . M S 
+[7ffff750]    61500043  433d6874  79505c3a  6e6f6874    C . P a t h = C : \ P y t h o n 
+[7ffff760]    3b5c3732  505c3a43  6f687479  5c37326e    2 7 \ ; C : \ P y t h o n 2 7 \ 
+[7ffff770]    69726353  3b737470  505c3a43  72676f72    S c r i p t s ; C : \ P r o g r 
+[7ffff780]    61446d61  4f5c6174  6c636172  614a5c65    a m D a t a \ O r a c l e \ J a 
+[7ffff790]    6a5c6176  70617661  3b687461  505c3a43    v a \ j a v a p a t h ; C : \ P 
+[7ffff7a0]    72676f72  46206d61  73656c69  38782820    r o g r a m   F i l e s   ( x 8 
+[7ffff7b0]    495c2936  6c65746e  4c43695c  6c432053    6 ) \ I n t e l \ i C L S   C l 
+[7ffff7c0]    746e6569  3a433b5c  6f72505c  6d617267    i e n t \ ; C : \ P r o g r a m 
+[7ffff7d0]    6c694620  495c7365  6c65746e  4c43695c      F i l e s \ I n t e l \ i C L 
+[7ffff7e0]    6c432053  746e6569  3a433b5c  6f72505c    S   C l i e n t \ ; C : \ P r o 
+[7ffff7f0]    6d617267  6c694620  28207365  29363878    g r a m   F i l e s   ( x 8 6 ) 
+[7ffff800]    646f435c  6f6c4265  5c736b63  476e694d    \ C o d e B l o c k s \ M i n G 
+[7ffff810]    69625c57  3a433b6e  6e69575c  73776f64    W \ b i n ; C : \ W i n d o w s 
+[7ffff820]    7379735c  336d6574  3a433b32  6e69575c    \ s y s t e m 3 2 ; C : \ W i n 
+[7ffff830]    73776f64  5c3a433b  646e6957  5c73776f    d o w s ; C : \ W i n d o w s \ 
+[7ffff840]    74737953  32336d65  6562575c  3a433b6d    S y s t e m 3 2 \ W b e m ; C : 
+[7ffff850]    6e69575c  73776f64  7379535c  336d6574    \ W i n d o w s \ S y s t e m 3 
+[7ffff860]    69575c32  776f646e  776f5073  68537265    2 \ W i n d o w s P o w e r S h 
+[7ffff870]    5c6c6c65  302e3176  3a433b5c  6f72505c    e l l \ v 1 . 0 \ ; C : \ P r o 
+[7ffff880]    6d617267  6c694620  28207365  29363878    g r a m   F i l e s   ( x 8 6 ) 
+[7ffff890]    746e495c  495c6c65  6c65746e  20295228    \ I n t e l \ I n t e l ( R )   
+[7ffff8a0]    616e614d  656d6567  4520746e  6e69676e    M a n a g e m e n t   E n g i n 
+[7ffff8b0]    6f432065  6e6f706d  73746e65  4c41445c    e   C o m p o n e n t s \ D A L 
+[7ffff8c0]    5c3a433b  676f7250  206d6172  656c6946    ; C : \ P r o g r a m   F i l e 
+[7ffff8d0]    6e495c73  5c6c6574  65746e49  2952286c    s \ I n t e l \ I n t e l ( R ) 
+[7ffff8e0]    6e614d20  6d656761  20746e65  69676e45      M a n a g e m e n t   E n g i 
+[7ffff8f0]    4320656e  6f706d6f  746e656e  41445c73    n e   C o m p o n e n t s \ D A 
+[7ffff900]    3a433b4c  6f72505c  6d617267  6c694620    L ; C : \ P r o g r a m   F i l 
+[7ffff910]    28207365  29363878  746e495c  495c6c65    e s   ( x 8 6 ) \ I n t e l \ I 
+[7ffff920]    6c65746e  20295228  616e614d  656d6567    n t e l ( R )   M a n a g e m e 
+[7ffff930]    4520746e  6e69676e  6f432065  6e6f706d    n t   E n g i n e   C o m p o n 
+[7ffff940]    73746e65  5450495c  5c3a433b  676f7250    e n t s \ I P T ; C : \ P r o g 
+[7ffff950]    206d6172  656c6946  6e495c73  5c6c6574    r a m   F i l e s \ I n t e l \ 
+[7ffff960]    65746e49  2952286c  6e614d20  6d656761    I n t e l ( R )   M a n a g e m 
+[7ffff970]    20746e65  69676e45  4320656e  6f706d6f    e n t   E n g i n e   C o m p o 
+[7ffff980]    746e656e  50495c73  3a433b54  6f72505c    n e n t s \ I P T ; C : \ P r o 
+[7ffff990]    6d617267  6c694620  28207365  29363878    g r a m   F i l e s   ( x 8 6 ) 
+[7ffff9a0]    49564e5c  20414944  70726f43  7461726f    \ N V I D I A   C o r p o r a t 
+[7ffff9b0]    5c6e6f69  73796850  6f435c58  6e6f6d6d    i o n \ P h y s X \ C o m m o n 
+[7ffff9c0]    5c3a433b  444e4957  5c53574f  74737973    ; C : \ W I N D O W S \ s y s t 
+[7ffff9d0]    32336d65  5c3a433b  444e4957  3b53574f    e m 3 2 ; C : \ W I N D O W S ; 
+[7ffff9e0]    575c3a43  4f444e49  535c5357  65747379    C : \ W I N D O W S \ S y s t e 
+[7ffff9f0]    5c32336d  6d656257  5c3a433b  444e4957    m 3 2 \ W b e m ; C : \ W I N D 
+[7ffffa00]    5c53574f  74737953  32336d65  6e69575c    O W S \ S y s t e m 3 2 \ W i n 
+[7ffffa10]    73776f64  65776f50  65685372  765c6c6c    d o w s P o w e r S h e l l \ v 
+[7ffffa20]    5c302e31  5c3a433b  676f7250  206d6172    1 . 0 \ ; C : \ P r o g r a m   
+[7ffffa30]    656c6946  78282073  5c293638  63697551    F i l e s   ( x 8 6 ) \ Q u i c 
+[7ffffa40]    6d69546b  54515c65  74737953  3b5c6d65    k T i m e \ Q T S y s t e m \ ; 
+[7ffffa50]    505c3a43  72676f72  46206d61  73656c69    C : \ P r o g r a m   F i l e s 
+[7ffffa60]    38782820  475c2936  68536b74  5c707261      ( x 8 6 ) \ G t k S h a r p \ 
+[7ffffa70]    32312e32  6e69625c  5c3a433b  676f7250    2 . 1 2 \ b i n ; C : \ P r o g 
+[7ffffa80]    206d6172  656c6946  78282073  5c293638    r a m   F i l e s   ( x 8 6 ) \ 
+[7ffffa90]    696c6143  32657262  3a433b5c  6f72505c    C a l i b r e 2 \ ; C : \ P r o 
+[7ffffaa0]    6d617267  6c694620  495c7365  6c65746e    g r a m   F i l e s \ I n t e l 
+[7ffffab0]    4669575c  69625c69  433b5c6e  72505c3a    \ W i F i \ b i n \ ; C : \ P r 
+[7ffffac0]    6172676f  6946206d  5c73656c  6d6d6f43    o g r a m   F i l e s \ C o m m 
+[7ffffad0]    46206e6f  73656c69  746e495c  575c6c65    o n   F i l e s \ I n t e l \ W 
+[7ffffae0]    6c657269  43737365  6f6d6d6f  433b5c6e    i r e l e s s C o m m o n \ ; C 
+[7ffffaf0]    72505c3a  6172676f  6946206d  5c73656c    : \ P r o g r a m   F i l e s \ 
+[7ffffb00]    6176614a  6b646a5c  302e392d  625c312e    J a v a \ j d k - 9 . 0 . 1 \ b 
+[7ffffb10]    633b6e69  76695c3a  6c697265  625c676f    i n ; c : \ i v e r i l o g \ b 
+[7ffffb20]    633b6e69  76695c3a  6c697265  675c676f    i n ; c : \ i v e r i l o g \ g 
+[7ffffb30]    61776b74  625c6576  433b6e69  72505c3a    t k w a v e \ b i n ; C : \ P r 
+[7ffffb40]    6172676f  6946206d  5c73656c  5c746947    o g r a m   F i l e s \ G i t \ 
+[7ffffb50]    3b646d63  505c3a43  72676f72  46206d61    c m d ; C : \ P r o g r a m   F 
+[7ffffb60]    73656c69  38782820  435c2936  656b614d    i l e s   ( x 8 6 ) \ C M a k e 
+[7ffffb70]    6e69625c  5c3a433b  676f7250  206d6172    \ b i n ; C : \ P r o g r a m   
+[7ffffb80]    656c6946  6f645c73  74656e74  3a433b5c    F i l e s \ d o t n e t \ ; C : 
+[7ffffb90]    6f72505c  6d617267  6c694620  495c7365    \ P r o g r a m   F i l e s \ I 
+[7ffffba0]    6c65746e  4669575c  69625c69  433b5c6e    n t e l \ W i F i \ b i n \ ; C 
+[7ffffbb0]    72505c3a  6172676f  6946206d  5c73656c    : \ P r o g r a m   F i l e s \ 
+[7ffffbc0]    6d6d6f43  46206e6f  73656c69  746e495c    C o m m o n   F i l e s \ I n t 
+[7ffffbd0]    575c6c65  6c657269  43737365  6f6d6d6f    e l \ W i r e l e s s C o m m o 
+[7ffffbe0]    433b5c6e  73555c3a  5c737265  70616553    n \ ; C : \ U s e r s \ S e a p 
+[7ffffbf0]    61646e61  7070415c  61746144  636f4c5c    a n d a \ A p p D a t a \ L o c 
+[7ffffc00]    4d5c6c61  6f726369  74666f73  6e69575c    a l \ M i c r o s o f t \ W i n 
+[7ffffc10]    73776f64  73707041  5c3a433b  72657355    d o w s A p p s ; C : \ U s e r 
+[7ffffc20]    65535c73  6e617061  415c6164  61447070    s \ S e a p a n d a \ A p p D a 
+[7ffffc30]    4c5c6174  6c61636f  7469475c  44627548    t a \ L o c a l \ G i t H u b D 
+[7ffffc40]    746b7365  625c706f  433b6e69  73555c3a    e s k t o p \ b i n ; C : \ U s 
+[7ffffc50]    5c737265  70616553  61646e61  7070415c    e r s \ S e a p a n d a \ A p p 
+[7ffffc60]    61746144  636f4c5c  615c6c61  5c6d6f74    D a t a \ L o c a l \ a t o m \ 
+[7ffffc70]    3b6e6962  695c3a43  6c65746e  41475046    b i n ; C : \ i n t e l F P G A 
+[7ffffc80]    2e37315c  6f6d5c31  736c6564  615f6d69    \ 1 7 . 1 \ m o d e l s i m _ a 
+[7ffffc90]    775c6573  32336e69  656f6c61  3a433b6d    s e \ w i n 3 2 a l o e m ; C : 
+[7ffffca0]    6573555c  535c7372  61706165  5c61646e    \ U s e r s \ S e a p a n d a \ 
+[7ffffcb0]    44707041  5c617461  61636f4c  694d5c6c    A p p D a t a \ L o c a l \ M i 
+[7ffffcc0]    736f7263  5c74666f  646e6957  4173776f    c r o s o f t \ W i n d o w s A 
+[7ffffcd0]    00737070  573d534f  6f646e69  4e5f7377    p p s . O S = W i n d o w s _ N 
+[7ffffce0]    6e4f0054  69724465  433d6576  73555c3a    T . O n e D r i v e = C : \ U s 
+[7ffffcf0]    5c737265  70616553  61646e61  656e4f5c    e r s \ S e a p a n d a \ O n e 
+[7ffffd00]    76697244  554e0065  5245424d  5f464f5f    D r i v e . N U M B E R _ O F _ 
+[7ffffd10]    434f5250  4f535345  343d5352  45494e00    P R O C E S S O R S = 4 . N I E 
+[7ffffd20]    43435458  49504d4f  5352454c  3d505055    X T C C O M P I L E R S U P P = 
+[7ffffd30]    505c3a43  72676f72  46206d61  73656c69    C : \ P r o g r a m   F i l e s 
+[7ffffd40]    38782820  4e5c2936  6f697461  206c616e      ( x 8 6 ) \ N a t i o n a l   
+[7ffffd50]    74736e49  656d7572  5c73746e  72616853    I n s t r u m e n t s \ S h a r 
+[7ffffd60]    455c6465  72657478  436c616e  69706d6f    e d \ E x t e r n a l C o m p i 
+[7ffffd70]    5372656c  6f707075  435c7472  494e005c    l e r S u p p o r t \ C \ . N I 
+[7ffffd80]    6d514144  69775378  44686374  433d7269    D A Q m x S w i t c h D i r = C 
+[7ffffd90]    72505c3a  6172676f  6946206d  2073656c    : \ P r o g r a m   F i l e s   
+[7ffffda0]    36387828  614e5c29  6e6f6974  49206c61    ( x 8 6 ) \ N a t i o n a l   I 
+[7ffffdb0]    7274736e  6e656d75  4e5c7374  41442d49    n s t r u m e n t s \ N I - D A 
+[7ffffdc0]    77535c51  68637469  4f4c005c  534e4f47    Q \ S w i t c h \ . L O G O N S 
+[7ffffdd0]    45565245  5c5c3d52  474e495a  414c2d45    E R V E R = \ \ Z I N G E - L A 
+[7ffffde0]    504f5450  434f4c00  50414c41  54414450    P T O P . L O C A L A P P D A T 
+[7ffffdf0]    3a433d41  6573555c  535c7372  61706165    A = C : \ U s e r s \ S e a p a 
+[7ffffe00]    5c61646e  44707041  5c617461  61636f4c    n d a \ A p p D a t a \ L o c a 
+[7ffffe10]    4f48006c  4150454d  5c3d4854  72657355    l . H O M E P A T H = \ U s e r 
+[7ffffe20]    65535c73  6e617061  48006164  44454d4f    s \ S e a p a n d a . H O M E D 
+[7ffffe30]    45564952  003a433d  5f4b5447  45534142    R I V E = C : . G T K _ B A S E 
+[7ffffe40]    48544150  5c3a433d  676f7250  206d6172    P A T H = C : \ P r o g r a m   
+[7ffffe50]    656c6946  78282073  5c293638  536b7447    F i l e s   ( x 8 6 ) \ G t k S 
+[7ffffe60]    70726168  312e325c  43005c32  70536d6f    h a r p \ 2 . 1 2 \ . C o m S p 
+[7ffffe70]    433d6365  49575c3a  574f444e  79735c53    e c = C : \ W I N D O W S \ s y 
+[7ffffe80]    6d657473  635c3233  652e646d  43006578    s t e m 3 2 \ c m d . e x e . C 
+[7ffffe90]    55504d4f  4e524554  3d454d41  474e495a    O M P U T E R N A M E = Z I N G 
+[7ffffea0]    414c2d45  504f5450  6d6f4300  506e6f6d    E - L A P T O P . C o m m o n P 
+[7ffffeb0]    72676f72  36576d61  3d323334  505c3a43    r o g r a m W 6 4 3 2 = C : \ P 
+[7ffffec0]    72676f72  46206d61  73656c69  6d6f435c    r o g r a m   F i l e s \ C o m 
+[7ffffed0]    206e6f6d  656c6946  6f430073  6e6f6d6d    m o n   F i l e s . C o m m o n 
+[7ffffee0]    676f7250  466d6172  73656c69  36387828    P r o g r a m F i l e s ( x 8 6 
+[7ffffef0]    3a433d29  6f72505c  6d617267  6c694620    ) = C : \ P r o g r a m   F i l 
+[7fffff00]    28207365  29363878  6d6f435c  206e6f6d    e s   ( x 8 6 ) \ C o m m o n   
+[7fffff10]    656c6946  6f430073  6e6f6d6d  676f7250    F i l e s . C o m m o n P r o g 
+[7fffff20]    466d6172  73656c69  5c3a433d  676f7250    r a m F i l e s = C : \ P r o g 
+[7fffff30]    206d6172  656c6946  78282073  5c293638    r a m   F i l e s   ( x 8 6 ) \ 
+[7fffff40]    6d6d6f43  46206e6f  73656c69  45574100    C o m m o n   F i l e s . A W E 
+[7fffff50]    5249445f  5c3a433d  676f7250  206d6172    _ D I R = C : \ P r o g r a m   
+[7fffff60]    656c6946  78282073  5c293638  73657741    F i l e s   ( x 8 6 ) \ A w e s 
+[7fffff70]    75696d6f  6554206d  6f6e6863  69676f6c    o m i u m   T e c h n o l o g i 
+[7fffff80]    4c207365  415c434c  6f736577  6d75696d    e s   L L C \ A w e s o m i u m 
+[7fffff90]    4b445320  372e315c  312e352e  7361005c      S D K \ 1 . 7 . 5 . 1 \ . a s 
+[7fffffa0]    6f6c2e6c  65443d67  6e697473  6f697461    l . l o g = D e s t i n a t i o 
+[7fffffb0]    69663d6e  4100656c  41445050  433d4154    n = f i l e . A P P D A T A = C 
+[7fffffc0]    73555c3a  5c737265  70616553  61646e61    : \ U s e r s \ S e a p a n d a 
+[7fffffd0]    7070415c  61746144  616f525c  676e696d    \ A p p D a t a \ R o a m i n g 
+[7fffffe0]    4c4c4100  52455355  4f525053  454c4946    . A L L U S E R S P R O F I L E 
+[7ffffff0]    5c3a433d  676f7250  446d6172  00617461    = C : \ P r o g r a m D a t a . 
+
+
+Kernel data segment [90000000]..[90010000]
+[90000000]    78452020  74706563  206e6f69  636f2000        E x c e p t i o n   .   o c 
+[90000010]    72727563  61206465  6920646e  726f6e67    c u r r e d   a n d   i g n o r 
+[90000020]    000a6465  495b2020  7265746e  74707572    e d . .     [ I n t e r r u p t 
+[90000030]    2000205d  4c545b20  20005d42  4c545b20    ]   .     [ T L B ] .     [ T L 
+[90000040]    20005d42  4c545b20  20005d42  64415b20    B ] .     [ T L B ] .     [ A d 
+[90000050]    73657264  72652073  20726f72  69206e69    d r e s s   e r r o r   i n   i 
+[90000060]    2f74736e  61746164  74656620  205d6863    n s t / d a t a   f e t c h ]   
+[90000070]    5b202000  72646441  20737365  6f727265    .     [ A d d r e s s   e r r o 
+[90000080]    6e692072  6f747320  205d6572  5b202000    r   i n   s t o r e ]   .     [ 
+[90000090]    20646142  74736e69  74637572  206e6f69    B a d   i n s t r u c t i o n   
+[900000a0]    72646461  5d737365  20200020  6461425b    a d d r e s s ]   .     [ B a d 
+[900000b0]    74616420  64612061  73657264  00205d73      d a t a   a d d r e s s ]   . 
+[900000c0]    455b2020  726f7272  206e6920  63737973        [ E r r o r   i n   s y s c 
+[900000d0]    5d6c6c61  20200020  6572425b  6f706b61    a l l ]   .     [ B r e a k p o 
+[900000e0]    5d746e69  20200020  7365525b  65767265    i n t ]   .     [ R e s e r v e 
+[900000f0]    6e692064  75727473  6f697463  00205d6e    d   i n s t r u c t i o n ]   . 
+[90000100]    5b202000  74697241  74656d68  6f206369    .     [ A r i t h m e t i c   o 
+[90000110]    66726576  5d776f6c  20200020  6172545b    v e r f l o w ]   .     [ T r a 
+[90000120]    00205d70  5b202000  616f6c46  676e6974    p ]   . .     [ F l o a t i n g 
+[90000130]    696f7020  205d746e  20000000  6f435b20      p o i n t ]   . . .     [ C o 
+[90000140]    636f7270  005d3220  20000000  444d5b20    p r o c   2 ] . . . .     [ M D 
+[90000150]    005d584d  575b2020  68637461  2020005d    M X ] .     [ W a t c h ] .     
+[90000160]    63614d5b  656e6968  65686320  005d6b63    [ M a c h i n e   c h e c k ] . 
+[90000170]    00000000  5b202000  68636143  00005d65    . . . . .     [ C a c h e ] . . 
+[90000180]    90000024  90000033  9000003b  90000043    $ . . . 3 . . . ; . . . C . . . 
+[90000190]    9000004b  90000071  9000008d  900000aa    K . . . q . . . . . . . . . . . 
+[900001a0]    900000c0  900000d6  900000e6  90000100    . . . . . . . . . . . . . . . . 
+[900001b0]    90000101  9000011a  90000124  90000125    . . . . . . . . $ . . . % . . . 
+[900001c0]    90000139  9000013a  9000013b  90000148    9 . . . : . . . ; . . . H . . . 
+[900001d0]    90000149  9000014a  9000014b  90000154    I . . . J . . . K . . . T . . . 
+[900001e0]    9000015e  90000170  90000171  90000172    ^ . . . p . . . q . . . r . . . 
+[900001f0]    90000173  90000174  90000175  9000017f    s . . . t . . . u . . . . . . . 
+[90000200]..[9000ffff]  00000000
+
+

@@ -63,6 +63,17 @@ namespace MIPS_Simulator
 		public static Dictionary<uint, int> textData;
 		public static Dictionary<uint, int> staticData; // key will be base memory address. value will be a byte of the data
 														
+		public static int GetStaticData(uint address)
+		{
+			// Used for grabbing data from addresses that are not evenly divisble by 4
+			if (address % 4 == 0)
+				return staticData[address];
+
+			uint difference = address % 0x10010000;
+			uint destAddr = 0x10010000 + difference - (difference % 4);
+			Debug.Log(destAddr.ToString("X"));
+			return staticData[destAddr];
+		}
 		public static Dictionary<uint, int> stackData;
 	}
 }

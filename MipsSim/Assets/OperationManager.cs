@@ -244,9 +244,10 @@ namespace MIPS_Simulator
 		void Mult(byte rs, byte rt, byte rd, byte shamt)
 		{
 			long product = (int)registers.registerTable[rs].value * (int) registers.registerTable[rt].value;
-			var newHi = (int) (product >> 32); // shift top 32 to lowest 32.
-			var newLo = (int) (product << 32); // kill leading 32 bits
-			newLo = (int)(product >> 32); // shift back to lower 32-bits.
+			var newHi = (long) ((ulong)product & 0xFFFFFFFF00000000); // shift top 32 to lowest 32.
+			newHi = newHi >> 32;
+			var newLo = (int) (product & 0x00000000FFFFFFFF); // kill leading 32 bits
+			//newLo = (int)(product >> 32); // shift back to lower 32-bits.
 
 			Globals.hi.value = newHi;
 			Globals.lo.value = newLo;
@@ -791,7 +792,7 @@ namespace MIPS_Simulator
 		// Jump and Link
 		void Jal(uint address)
 		{
-			registers.registerTable[31].value = Globals.PC + 8; // r31 is $ra.
+			registers.registerTable[31].value = Globals.PC; // r31 is $ra.
 
 			int offset = Convert.ToInt32(address);
 			offset = (offset << 2);
