@@ -298,7 +298,7 @@ namespace MIPS_Simulator
 		// Set register if less than (signed)
 		void Slt(byte rs, byte rt, byte rd, byte shamt)
 		{
-			registers.registerTable[rd].value = (int)registers.registerTable[rs].value < (int) registers.registerTable[rt].value;
+			registers.registerTable[rd].value = Convert.ToInt32((int)registers.registerTable[rs].value < (int) registers.registerTable[rt].value);
 
 			//RegisterTextManager.instance.SetRegisterText(rd, registers.registerTable[rd].alias, registers.registerTable[rd].value);
 		}
@@ -759,7 +759,7 @@ namespace MIPS_Simulator
 		// Set on less than immediate (signed)
 		void SltI(byte rs, byte rt, short immediate)
 		{
-			registers.registerTable[rt].value = ((int)registers.registerTable[rs].value) < immediate;
+			registers.registerTable[rt].value = Convert.ToInt32(((int)registers.registerTable[rs].value) < immediate);
 
 			//RegisterTextManager.instance.SetRegisterText(rt, registers.registerTable[rt].alias, registers.registerTable[rt].value);
 		}
@@ -767,7 +767,7 @@ namespace MIPS_Simulator
 		// Set on less than immediate (unsigned)
 		void SltIU(byte rs, byte rt, short immediate)
 		{
-			registers.registerTable[rt].value = ((uint)registers.registerTable[rs].value) < immediate;
+			registers.registerTable[rt].value = Convert.ToInt32(((uint)registers.registerTable[rs].value) < immediate);
 
 			//RegisterTextManager.instance.SetRegisterText(rt, registers.registerTable[rt].alias, registers.registerTable[rt].value);
 		}

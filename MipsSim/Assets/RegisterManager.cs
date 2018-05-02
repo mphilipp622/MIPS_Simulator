@@ -57,6 +57,12 @@ namespace MIPS_Simulator
 
 				_registers.Add(i, newRegister); 
 			}
+
+			//registerTable[13].value = 0x53fc;
+			//registerTable[14].value = 0x6405;
+			//registerTable[16].value = 0x10010000;
+			//registerTable[24].value = 0x0;
+			//registerTable[25].value = 0x0;
 		}
 	}
 }

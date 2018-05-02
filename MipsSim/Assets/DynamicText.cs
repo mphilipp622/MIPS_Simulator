@@ -19,8 +19,7 @@ public class DynamicText : MonoBehaviour {
 	}
 
 	void Start () {
-		
-		
+	
 	}
 	
 	void Update () {
