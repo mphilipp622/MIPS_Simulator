@@ -412,7 +412,12 @@ namespace MIPS_Simulator
 			else if (code == 8)
 				UIManager.instance.ReadString();
 			else if (code == 10)
-				Application.Quit(); // kill application
+			{
+				Globals.execute = false;
+				Globals.canProceed = false;
+				//Application.Quit(); // kill application
+			}
+				
 		}
 
 		///////////////////////////////////
@@ -742,9 +747,9 @@ namespace MIPS_Simulator
 
 			if (registers.registerTable[rs].alias == "$sp")
 			{
-				Globals.stackData[offset] = registers.registerTable[rt].value;
+				Globals.stackData[offset] = Convert.ToInt32(registers.registerTable[rt].value);
 
-				UIManager.instance.WriteStackMemory(offset, registers.registerTable[rt].value);
+				UIManager.instance.WriteStackMemory(offset, (int) registers.registerTable[rt].value);
 			}
 			else
 			{

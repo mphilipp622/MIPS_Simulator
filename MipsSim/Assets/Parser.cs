@@ -37,7 +37,6 @@ namespace MIPS_Simulator
 
 				instRead.ParseAndPrintInstruction(line);
 			}
-
 			MemoryInitializer.InitStaticData(lines);
 			MemoryInitializer.InitStack();
 			MemoryInitializer.InitTextData(lines);

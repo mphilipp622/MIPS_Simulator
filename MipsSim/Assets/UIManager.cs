@@ -316,6 +316,8 @@ public class UIManager : MonoBehaviour
 	public void SetInt()
 	{
 		OperationManager.registers.registerTable[2].value = Convert.ToInt32(inputPanel.GetComponentInChildren<InputField>().text);
+
+		
 		//Globals.intToDisplay = Convert.ToInt32(inputPanel.GetComponentInChildren<InputField>().text);
 	}
 
